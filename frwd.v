@@ -1,0 +1,45 @@
+`default_nettype none
+
+/**
+*   Forwarding Unit
+*   
+*   This module selects inputs to ALU based on control signals
+*           control signals either come from control unit or hazard detection unit
+*   
+*   In the case where a Read-After-Write Hazard is detected, we can reduce cpi by
+*           forwarding outputs from memory or alu output to alu input
+*/
+
+module frwd
+(
+    input wire          i_auipc,        //load pc into op1
+    input wire          i_imm,          //load immediate to op2
+    input wire          i_jal,          //load 4 into op2
+    input wire          i_jalr,
+    input wire          i_mem_reg,      //select ALU or memory result
+    input wire [31:0]   i_pc,           //program counter value
+    input wire [31:0]   i_rs1_rdata,    //rs1 data from rf
+    input wire [31:0]   i_rs2_rdata,    //rs2 data from rf
+    input wire [31:0]   i_res,          //alu output
+    input wire [31:0]   i_dmem_rdata,   //memory output
+
+    output wire [31:0]  o_op1,          //alu op1
+    output wire [31:0]  o_op2,          //alu op2
+    output wire [31:0]  o_dmem_addr,    //memory access address
+    output wire [31:0]  o_rd_wdata      //register file write data
+);
+
+    // Data being fed to ALU changes based on specific instruction
+    assign o_op1                  =   (i_auipc)             ?   i_pc :   i_rs1_rdata;
+    assign o_op2                  =   (i_imm)               ?   i_immediate   :
+                                      (i_jal | i_jalr)      ?   32'd4       :       // When we are jumping, pc is loaded to op1
+                                                                            // So we need to store pc + 4 in rd
+                                                                i_rs2_rdata;
+
+    // This is simply for readability, it has no effect on the system
+    assign o_dmem_addr =   i_res;
+
+    // Need to determine if we want to use ALU result or memory output
+    assign o_retire_rd_wdata    =   (i_mem_reg) ?   i_dmem_rdata : i_res;
+
+endmodule

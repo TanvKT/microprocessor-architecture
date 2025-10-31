@@ -177,7 +177,8 @@ module hart #(
                 .o_dmem_mask(dmem_mask));
 
     // Register File
-    rf   rf(  .i_clk(i_clk), 
+    rf          #(BYPASS_EN = 1) rf(  
+                .i_clk(i_clk), 
                 .i_rst(i_rst), 
                 .i_rs1_raddr(o_retire_rs1_raddr), 
                 .i_rs2_raddr(o_retire_rs2_raddr), 
@@ -198,6 +199,22 @@ module hart #(
                 .i_rs1(o_retire_rs1_rdata),
                 .o_imem_raddr(o_imem_raddr),
                 .o_nxt_pc(o_retire_next_pc));
+
+    // Arithmetic Logic Unit Operand Selection (forwarding unit)
+    frwd frwd( .i_auipc(auipc),
+                .i_imm(_imm),
+                .i_jal(jal),
+                .i_jalr(jalr),
+                .i_mem_reg(mem_reg),
+                .i_pc(o_retire_pc),
+                .i_rs1_rdata(o_retire_rs1_rdata),
+                .i_rs2_rdata(o_retite_rs2_rdata),
+                .i_res(res),
+                .i_dmem_rdata(i_dmem_rdata),
+                .o_op1(op1),
+                .o_op2(op2),
+                .o_dmem_addr(o_dmem_addr),
+                .o_rd_wdata(o_rd_wdata));
 
     // Arithmetic Logic Unit
     alu  alu( .i_opsel(opsel), 
@@ -249,19 +266,6 @@ module hart #(
     assign o_retire_valid   = 1'b1;     //Tie high for Single Cycle
     assign o_retire_inst    = i_imem_rdata;
     assign o_retire_pc      = o_imem_raddr;
-
-    // Data being fed to ALU changes based on specific instruction
-    assign op1                  =   (auipc)         ?   o_retire_pc :   o_retire_rs1_rdata;
-    assign op2                  =   (_imm)          ?   immediate   :
-                                    (jal | jalr)    ?   32'd4       :       // When we are jumping, pc is loaded to op1
-                                                                            // So we need to store pc + 4 in rd
-                                                        o_retire_rs2_rdata;
-
-    // This is simply for readability, it has no effect on the system
-    assign dmem_addr =   res;
-
-    // Need to determine if we want to use ALU result or memory output
-    assign o_retire_rd_wdata    =   (mem_reg) ?   dmem_rdata : res;
 
 endmodule
 
