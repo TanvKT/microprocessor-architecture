@@ -18,6 +18,7 @@ module ctrl (
     output wire             o_auipc,        // Asserted if pc needs to be loaded to rs1
     output wire             o_break,        // Asserted on break instruction
     output wire             o_trap,         // Asserted if invalid instruction given
+    output wire             o_branch,       // Asserted if branch instruction
 
     // ALU Control
     output wire [2:0]       o_opsel,        // Operation select (funct3)
@@ -28,11 +29,6 @@ module ctrl (
     output wire             o_mem,          // Asserted on load/store instruction
     output wire             o_jal,          // Asserted on jump instruction
     output wire             o_jalr,         // Asserted on jalr instruction
-
-    // Branch Control
-    input wire              i_eq,           // OP1 and OP2 Equal
-    input wire              i_slt,          // OP1 < OP2
-    output wire             o_br_vld,       // Indicates to take branch
 
     // Register Control
     output wire [ 4:0]      o_rs1_raddr,    // RS1 address (inst[19:15])
@@ -95,9 +91,7 @@ assign o_rs2_raddr  = i_imem_rdata[24:20];                      //RS2
 assign o_rd_waddr   = (o_rd_wen) ? i_imem_rdata[11:7] : 5'd0;   //RD (need to tie low for test bench purposes)
 
 // B-Type
-assign o_br_vld     = is_branch &  ((i_eq   & (o_opsel == 3'b000)) | (~i_eq & (o_opsel == 3'b001)) | // Need to invert result if bne taken
-                                    (i_slt  & ((o_opsel == 3'b100) | (o_opsel == 3'b110))) |         // If Less Than instruction
-                                    (~i_slt & ((o_opsel == 3'b101) | (o_opsel == 3'b111))));         // If Greater Than or Equal
+assign o_branch     = is_branch;
 
 // I-Type Load value from mem to reg
 assign o_mem_read   = is_load; 
