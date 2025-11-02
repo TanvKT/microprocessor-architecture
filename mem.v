@@ -34,7 +34,7 @@ module mem
 
     output wire [31:0] o_dmem_addr,
     output wire [31:0] o_dmem_wdata,
-    output wire [31:0] o_dmem_mask,
+    output wire [3:0]  o_dmem_mask,
     output wire        o_vld,
     output wire [31:0]  o_inst,
     output wire [4:0]   o_rs1_raddr,
@@ -65,7 +65,7 @@ module mem
     // Memory handler (determines mask and aligns accesses)
     dmem dmem(.i_opsel(i_opsel),
                 .i_dmem_addr(i_dmem_addr),
-                .i_dmem_wdata(i_dmem_wdata),
+                .i_rs2_rdata(i_dmem_wdata),
                 .i_dmem_rdata(i_dmem_rdata),
                 .o_dmem_addr(o_dmem_addr),
                 .o_dmem_wdata(o_dmem_wdata),

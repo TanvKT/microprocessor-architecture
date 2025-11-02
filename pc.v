@@ -29,7 +29,7 @@ module pc #(
 
     /* Address Signals */
     // Immediate value used for Branch and Jump
-    input wire  [31:0]  i_imm,
+    input wire  [31:0]  i_immediate,
     //RS1 input for jalr instruction
     input wire  [31:0]  i_rs1,
     // Next instruction address to execute
@@ -62,11 +62,11 @@ assign br_vld       = i_branch &  ((i_eq   & (i_opsel == 3'b000)) | (~i_eq & (i_
                                     (~i_slt & ((i_opsel == 3'b101) | (i_opsel == 3'b111))));         // If Greater Than or Equal
 
 /* Logic to determine next addr */
-wire [31:0] jalr_v      = i_rs1 + i_imm;
-assign nxt_addr         = (br_vld | i_jal)    ? curr_addr + i_imm :     //In this case we branch based offset, if taking this instruction
-                                                                      //        immediate is always aligned so no need to fix here
-                          (i_jalr)          ? {jalr_v[31:1], 1'b0} :  //Need to clear lsb to ensure aligned
-                                               curr_addr + 3'd4;      //In this case we increment PC by one instruction (default)
+wire [31:0] jalr_v      = i_rs1 + i_immediate;
+assign nxt_addr         = (br_vld | i_jal)    ? curr_addr + i_immediate :   //In this case we branch based offset, if taking this instruction
+                                                                            //        immediate is always aligned so no need to fix here
+                          (i_jalr)          ? {jalr_v[31:1], 1'b0} :        //Need to clear lsb to ensure aligned
+                                               curr_addr + 3'd4;            //In this case we increment PC by one instruction (default)
 
 /* Link output wire */
 assign o_imem_raddr = curr_addr;

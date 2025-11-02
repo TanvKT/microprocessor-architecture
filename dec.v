@@ -9,10 +9,10 @@ module dec
     // Synchronous active-high reset.
     input  wire         i_rst,
     // Next PC
-    input  wire         i_nxt_pc,
+    input  wire [31:0]  i_nxt_pc,
     // Instruction Valid
     input  wire         i_vld,
-    input  wire         i_pc,
+    input  wire [31:0]  i_pc,
 
     // Instruction data
     input  wire [31:0]  i_inst,
@@ -256,5 +256,5 @@ module dec
     assign o_rs2_raddr     = rs2_raddr_ff;
     assign o_pc            = pc_ff;
     assign o_nxt_pc        = nxt_pc_ff;
-    
+
 endmodule

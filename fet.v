@@ -25,7 +25,7 @@ module fet
 
     /* Address Signals */
     // Immediate value used for Branch and Jump
-    input wire  [31:0]  i_imm,
+    input wire  [31:0]  i_immediate,
     //RS1 input for jalr instruction
     input wire  [31:0]  i_rs1,
     // Next instruction address to execute
@@ -60,8 +60,8 @@ module fet
                 .i_jal(i_jal),
                 .i_jalr(i_jalr),
                 .i_halt(i_halt | i_hold), 
-                .i_imm(i_imm),
-                .i_rs1(i_rs1_rdata),
+                .i_immediate(i_immediate),
+                .i_rs1(i_rs1),
                 .o_imem_raddr(o_imem_raddr),
                 .o_nxt_pc(nxt_pc),
                 .o_flush(flush));
@@ -70,7 +70,7 @@ module fet
     always @(posedge i_clk) begin
         if (i_rst | flush) begin
             //on reset or flush load add x0 and x0 to x0
-            inst_ff   <= 32'h0x00000033;
+            inst_ff   <= 32'h00000033;
             vld_ff    <= 1'b0;
         end
         else if (!i_hold) begin

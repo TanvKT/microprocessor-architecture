@@ -31,8 +31,7 @@ module frwd
     input wire [31:0]   i_mem_res,      //memory output
 
     output wire [31:0]  o_op1,          //alu op1
-    output wire [31:0]  o_op2,          //alu op2
-    output wire [31:0]  o_rd_wdata      //register file write data
+    output wire [31:0]  o_op2           //alu op2
 );
 
     // Data being fed to ALU changes based on specific instruction
