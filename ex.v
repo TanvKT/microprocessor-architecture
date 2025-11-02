@@ -36,10 +36,10 @@ module ex
     input wire          i_frwd_alu_op2, //forward from alu result op2
     input wire          i_frwd_mem_op2, //forward from memory result op2
 
-    input wire [31:0]      i_inst;
-    input wire [4:0]       i_rs1_raddr;
-    output wire [4:0]      i_rs2_raddr;
-    input wire [31:0]      i_nxt_pc;
+    input wire [31:0]      i_inst,
+    input wire [4:0]       i_rs1_raddr,
+    output wire [4:0]      i_rs2_raddr,
+    input wire [31:0]      i_nxt_pc,
 
     output wire         o_slt,
     output wire         o_eq,
@@ -53,20 +53,39 @@ module ex
     output wire         o_branch,
     output wire [31:0]  o_dmem_addr,
     output wire [31:0]  o_dmem_wdata,
-    output wire         o_vld
+    output wire         o_vld,
 
-    output wire [31:0]  o_inst;
-    output wire [4:0]   o_rs1_raddr;
-    output wire [4:0]   o_rs2_raddr;
-    output wire [31:0]  o_rs1_rdata;
-    output wire [31:0]  o_rs2_rdata;
-    output wire [31:0]  o_pc;
-    output wire [31:0]  o_nxt_pc;
+    output wire [31:0]  o_inst,
+    output wire [4:0]   o_rs1_raddr,
+    output wire [4:0]   o_rs2_raddr,
+    output wire [31:0]  o_rs1_rdata,
+    output wire [31:0]  o_rs2_rdata,
+    output wire [31:0]  o_pc,
+    output wire [31:0]  o_nxt_pc
 );
     // Internal Signals
     wire    [31:0] op1;
     wire    [31:0] op2;
     wire    [31:0] res;
+
+    // Registers
+    reg [31:0]   res_ff;
+    reg          mem_write_ff;
+    reg [2:0]    opsel_ff;
+    reg          mem_reg_ff;
+    reg          mem_read_ff;
+    reg [31:0]   dmem_addr_ff;
+    reg [31:0]   dmem_wdata_ff;
+    reg [4:0]    rd_waddr_ff;
+    reg          rd_wen_ff;
+    reg          vld_ff;
+    reg [31:0]   inst_ff;
+    reg [4:0]    rs1_raddr_ff;
+    reg [4:0]    rs2_raddr_ff;
+    reg [31:0]   rs1_rdata_ff;
+    reg [31:0]   rs2_rdata_ff;
+    reg [31:0]   pc_ff;
+    reg [31:0]   nxt_pc_ff;
 
     // Arithmetic Logic Unit Operand Selection (forwarding unit)
     frwd frwd( .i_auipc(i_auipc),
@@ -105,28 +124,46 @@ module ex
     always @(posedge i_clk) begin
         // Only need reset for certain signals
         if (i_rst) begin
-            o_vld       <= 1'b0;
-            o_mem_read  <= 1'b0;
-            o_mem_write <= 1'b0;
+            vld_ff       <= 1'b0;
+            mem_read_ff  <= 1'b0;
+            mem_write_ff <= 1'b0;
         end
-        o_res           <= res;
-        o_mem_write     <= i_mem_write;
-        o_opsel         <= i_opsel;
-        o_mem_reg       <= i_mem_reg;
-        o_mem_read      <= i_mem_read;
-        o_mem_write     <= i_mem_write;
-        o_dmem_addr     <= res;
-        o_dmem_wdata    <= op2;
-        o_rd_waddr      <= i_rd_waddr;
-        o_rd_wen        <= i_rd_wen;
-        o_vld           <= i_vld;
-        o_inst          <= i_inst;
-        o_rs1_raddr     <= i_rs1_raddr;
-        o_rs2_raddr     <= i_rs2_raddr;
-        o_rs1_rdata     <= i_rs1_rdata;
-        o_rs2_rdata     <= i_rs1_rdata;
-        o_pc            <= i_pc;
-        o_nxt_pc        <= i_nxt_pc;
+        res_ff           <= res;
+        opsel_ff         <= i_opsel;
+        mem_reg_ff       <= i_mem_reg;
+        mem_read_ff      <= i_mem_read;
+        mem_write_ff     <= i_mem_write;
+        dmem_addr_ff     <= res;
+        dmem_wdata_ff    <= op2;
+        rd_waddr_ff      <= i_rd_waddr;
+        rd_wen_ff        <= i_rd_wen;
+        vld_ff           <= i_vld;
+        inst_ff          <= i_inst;
+        rs1_raddr_ff     <= i_rs1_raddr;
+        rs2_raddr_ff     <= i_rs2_raddr;
+        rs1_rdata_ff     <= i_rs1_rdata;
+        rs2_rdata_ff     <= i_rs1_rdata;
+        pc_ff            <= i_pc;
+        nxt_pc_ff        <= i_nxt_pc;
     end
+
+    // Assign wires to register
+    assign o_res           = res_ff;
+    assign o_opsel         = opsel_ff;
+    assign o_mem_reg       = mem_reg_ff;
+    assign o_mem_read      = mem_read_ff;
+    assign o_mem_write     = mem_write_ff;
+    assign o_dmem_addr     = dmem_addr_ff;
+    assign o_dmem_wdata    = dmem_wdata_ff;
+    assign o_rd_waddr      = rd_waddr_ff;
+    assign o_rd_wen        = rd_wen_ff;
+    assign o_vld           = vld_ff;
+    assign o_inst          = inst_ff;
+    assign o_rs1_raddr     = rs1_raddr_ff;
+    assign o_rs2_raddr     = rs2_raddr_ff;
+    assign o_rs1_rdata     = rs1_rdata_ff;
+    assign o_rs2_rdata     = rs1_rdata_ff;
+    assign o_pc            = pc_ff;
+    assign o_nxt_pc        = nxt_pc_ff;
 
 endmodule

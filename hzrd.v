@@ -14,7 +14,7 @@ module hzrd
     output wire         o_frwd_alu_op1, //forward from alu result op1
     output wire         o_frwd_mem_op1, //forward from memory result op1
     output wire         o_frwd_alu_op2, //forward from alu result op2
-    output wire         o_frwd_mem_op2, //forward from memory result op2
+    output wire         o_frwd_mem_op2  //forward from memory result op2
 );
 
 // Internal Signals

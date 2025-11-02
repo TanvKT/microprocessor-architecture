@@ -242,6 +242,7 @@ module hart #(
         .i_imem_rdata(i_imem_rdata),
         .o_inst(fe_inst),
         .o_nxt_pc(fe_nxt_pc),
+        .o_pc(fe_pc),
         .o_vld(fe_vld)
     );
 
@@ -251,7 +252,7 @@ module hart #(
         .i_rst(i_rst),
         .i_nxt_pc(fe_nxt_pc),
         .i_vld(fe_vld),
-        .i_pc(o_imem_raddr),
+        .i_pc(fe_pc),
         .i_inst(fe_inst),
         .i_dmem_addr(ex_dmem_addr),
         .i_rd_waddr(wb_rd_waddr),
@@ -353,7 +354,7 @@ module hart #(
         .i_rs1_rdata(ex_rs1_data),
         .i_rs2_rdata(ex_rs2_rdata),
         .i_pc(ex_pc),
-        .i_nxt_pc(ex_nxt_pc)
+        .i_nxt_pc(ex_nxt_pc),
         .i_opsel(ex_opsel),
         .i_rd_waddr(ex_rd_waddr),
         .i_rd_wen(ex_rd_wen),
@@ -377,7 +378,7 @@ module hart #(
         .o_rs1_rdata(mem_rs1_rdata),
         .o_rs2_rdata(mem_rs2_rdata),
         .o_pc(mem_pc),
-        .o_nxt_pc(mem_nxt_pc),
+        .o_nxt_pc(mem_nxt_pc)
     );
 
     // Write-back stage
@@ -395,7 +396,7 @@ module hart #(
         .i_rs1_rdata(mem_rs1_data),
         .i_rs2_rdata(mem_rs2_rdata),
         .i_pc(mem_pc),
-        .i_nxt_pc(mem_nxt_pc)
+        .i_nxt_pc(mem_nxt_pc),
         .o_res(wb_res),
         .o_rd_waddr(wb_rd_waddr),
         .o_rd_wen(wb_rd_wen),

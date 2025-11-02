@@ -34,6 +34,7 @@ module fet
     input wire  [31:0]  i_imem_rdata,
     output wire [31:0]  o_inst,
     // Next PC value to send to control unit to determine if trap needed
+    output wire [31:0]  o_pc,
     output wire [31:0]  o_nxt_pc,
     // Instruction Valid
     output wire         o_vld
@@ -41,6 +42,13 @@ module fet
     // Internal Signals
     wire        [31:0]  nxt_pc;
     wire                flush;
+
+    // Register Holding
+    reg [31:0]  inst_ff;
+    reg [31:0]  nxt_pc_ff;
+    reg [31:0]  pc_ff;
+    reg         flush_ff;
+    reg         vld_ff;
 
     // Program Counter
     pc   pc(  .i_clk(i_clk), 
@@ -55,22 +63,31 @@ module fet
                 .i_imm(i_imm),
                 .i_rs1(i_rs1_rdata),
                 .o_imem_raddr(o_imem_raddr),
-                .o_nxt_pc(nxt_pc)
+                .o_nxt_pc(nxt_pc),
                 .o_flush(flush));
 
     // IF/ID register
     always @(posedge i_clk) begin
         if (i_rst | flush) begin
             //on reset or flush load add x0 and x0 to x0
-            o_inst   <= 32'h0x00000033;
-            o_vld    <= 1'b0;
+            inst_ff   <= 32'h0x00000033;
+            vld_ff    <= 1'b0;
         end
         else if (!i_hold) begin
-            o_inst   <= i_imem_rdata;
-            o_nxt_pc <= nxt_pc;
-            o_flush  <= flush;
-            o_vld    <= 1'b1;
+            inst_ff        <= i_imem_rdata;
+            nxt_pc_ff      <= nxt_pc;
+            pc_ff          <= o_imem_raddr;
+            flush_ff       <= flush;
+            vld_ff         <= 1'b1;
         end
-        // Implied else
+        // Implied else hold value
     end
+
+    // Assign output wires to registers
+    assign o_inst   = inst_ff;
+    assign o_vld    = vld_ff;
+    assign o_nxt_pc = nxt_pc_ff;
+    assign o_pc     = pc_ff;
+    assign o_flush  = flush_ff;
+
 endmodule

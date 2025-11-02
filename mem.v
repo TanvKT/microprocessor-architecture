@@ -47,6 +47,21 @@ module mem
     // Internal Signals
     wire [31:0] dmem_rdata;
 
+    // Register Signals
+    reg          mem_reg_ff;
+    reg [31:0]   res_ff;
+    reg [4:0]    rd_waddr_ff;
+    reg          rd_wen_ff;
+    reg [31:0]   dmem_rdata_ff;
+    reg          vld_ff;
+    reg [31:0]   inst_ff;
+    reg [4:0]    rs1_raddr_ff;
+    reg [4:0]    rs2_raddr_ff;
+    reg [31:0]   rs1_rdata_ff;
+    reg [31:0]   rs2_rdata_ff;
+    reg [31:0]   pc_ff;
+    reg [31:0]   nxt_pc_ff;
+
     // Memory handler (determines mask and aligns accesses)
     dmem dmem(.i_opsel(i_opsel),
                 .i_dmem_addr(i_dmem_addr),
@@ -61,21 +76,36 @@ module mem
     always @(posedge i_clk) begin
         // Only need reset for vld
         if (i_rst) begin
-            o_vld <= 1'b0;
+            vld_ff <= 1'b0;
         end
-        o_mem_reg       <= i_mem_reg;
-        o_res           <= i_res;
-        o_rd_waddr      <= i_rd_waddr;
-        o_rd_wen        <= i_rd_wen;
-        o_dmem_rdata    <= dmem_rdata;
-        o_vld           <= i_vld;
-        o_inst          <= i_inst;
-        o_rs1_raddr     <= i_rs1_raddr;
-        o_rs2_raddr     <= i_rs2_raddr;
-        o_rs1_rdata     <= i_rs1_rdata;
-        o_rs2_rdata     <= i_rs2_rdata;
-        o_pc            <= i_pc;
-        o_nxt_pc        <= i_nxt_pc;
+        mem_reg_ff       <= i_mem_reg;
+        res_ff           <= i_res;
+        rd_waddr_ff      <= i_rd_waddr;
+        rd_wen_ff        <= i_rd_wen;
+        dmem_rdata_ff    <= dmem_rdata;
+        vld_ff           <= i_vld;
+        inst_ff          <= i_inst;
+        rs1_raddr_ff     <= i_rs1_raddr;
+        rs2_raddr_ff     <= i_rs2_raddr;
+        rs1_rdata_ff     <= i_rs1_rdata;
+        rs2_rdata_ff     <= i_rs2_rdata;
+        pc_ff            <= i_pc;
+        nxt_pc_ff        <= i_nxt_pc;
     end
+
+    // Assign Registers to wires
+    assign o_mem_reg       = mem_reg_ff;
+    assign o_res           = res_ff;
+    assign o_rd_waddr      = rd_waddr_ff;
+    assign o_rd_wen        = rd_wen_ff;
+    assign o_dmem_rdata    = dmem_rdata_ff;
+    assign o_vld           = vld_ff;
+    assign o_inst          = inst_ff;
+    assign o_rs1_raddr     = rs1_raddr_ff;
+    assign o_rs2_raddr     = rs2_raddr_ff;
+    assign o_rs1_rdata     = rs1_rdata_ff;
+    assign o_rs2_rdata     = rs2_rdata_ff;
+    assign o_pc            = pc_ff;
+    assign o_nxt_pc        = nxt_pc_ff;
 
 endmodule
