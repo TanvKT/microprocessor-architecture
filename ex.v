@@ -154,7 +154,7 @@ module ex
     assign o_rs1_raddr     = rs1_raddr_ff;
     assign o_rs2_raddr     = rs2_raddr_ff;
     assign o_rs1_rdata     = rs1_rdata_ff;
-    assign o_rs2_rdata     = rs1_rdata_ff;
+    assign o_rs2_rdata     = rs2_rdata_ff;
     assign o_pc            = pc_ff;
     assign o_nxt_pc        = nxt_pc_ff;
 
