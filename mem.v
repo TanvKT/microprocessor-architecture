@@ -53,15 +53,11 @@ module mem
     output wire [31:0]  o_pc,
     output wire [31:0]  o_nxt_pc
 );
-    // Internal Signals
-    wire [31:0] dmem_rdata;
-
     // Register Signals
     reg          mem_reg_ff;
     reg [31:0]   res_ff;
     reg [4:0]    rd_waddr_ff;
     reg          rd_wen_ff;
-    reg [31:0]   dmem_rdata_ff;
     reg          vld_ff;
     reg [31:0]   inst_ff;
     reg [4:0]    rs1_raddr_ff;
@@ -83,7 +79,7 @@ module mem
                 .i_dmem_rdata(i_dmem_rdata),
                 .o_dmem_addr(o_dmem_addr),
                 .o_dmem_wdata(o_dmem_wdata),
-                .o_dmem_rdata(dmem_rdata),
+                .o_dmem_rdata(o_dmem_rdata), // Read data is synchronous, so doesn't need pipeline
                 .o_dmem_mask(o_dmem_mask));
     assign o_dmem_wen = i_dmem_wen;
     assign o_dmem_ren = i_dmem_ren;
@@ -92,14 +88,17 @@ module mem
     always @(posedge i_clk) begin
         // Only need reset for vld
         if (i_rst) begin
-            vld_ff <= 1'b0;
+            vld_ff      <= 1'b0;
+            rd_wen_ff   <= 1'b0;
+            rd_waddr_ff <= 5'd0;
+            res_ff      <= 32'd0;
+            mem_reg_ff  <= 1'b0;
         end
         else begin
             mem_reg_ff       <= i_mem_reg;
             res_ff           <= i_res;
             rd_waddr_ff      <= i_rd_waddr;
             rd_wen_ff        <= i_rd_wen;
-            dmem_rdata_ff    <= dmem_rdata;
             vld_ff           <= i_vld;
             inst_ff          <= i_inst;
             rs1_raddr_ff     <= i_rs1_raddr;
@@ -121,7 +120,6 @@ module mem
     assign o_res           = res_ff;
     assign o_rd_waddr      = rd_waddr_ff;
     assign o_rd_wen        = rd_wen_ff;
-    assign o_dmem_rdata    = dmem_rdata_ff;
     assign o_vld           = vld_ff;
     assign o_inst          = inst_ff;
     assign o_rs1_raddr     = rs1_raddr_ff;

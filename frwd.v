@@ -41,7 +41,7 @@ module frwd
     assign o_op1                  =   (i_frwd_alu_op1)      ?   i_ex_alu_res :
                                       (i_frwd_mem_alu_op1)  ?   i_mem_alu_res :
                                       (i_frwd_mem_op1)      ?   i_mem_res :
-                                      (i_auipc)             ?   i_pc :   
+                                      (i_auipc)             ?   i_pc :
                                                                 i_rs1_rdata;
 
 

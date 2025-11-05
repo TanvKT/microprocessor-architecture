@@ -167,7 +167,6 @@ module hart #(
 
     // For specifics on what each signal means look at control unit
     // Fetch
-    wire [31:0]             fe_inst;
     wire [31:0]             fe_nxt_pc;
     wire                    fe_vld;
     wire [31:0]             fe_pc;
@@ -257,7 +256,6 @@ module hart #(
     wire [4:0]              wb_rs2_raddr;
     wire [31:0]             wb_rs1_rdata;
     wire [31:0]             wb_rs2_rdata;
-    wire [31:0]             wb_rd_wdata;
     wire [31:0]             wb_dmem_addr;
     wire [3:0]              wb_dmem_mask;
     wire                    wb_dmem_ren;
@@ -283,9 +281,7 @@ module hart #(
         .i_immediate(de_immediate),
         .i_rs1(de_rs1_rdata),
         .o_imem_raddr(o_imem_raddr),
-        .i_imem_rdata(i_imem_rdata),
         .o_flush(fe_flush),
-        .o_inst(fe_inst),
         .o_nxt_pc(fe_nxt_pc),
         .o_pc(fe_pc),
         .o_vld(fe_vld)
@@ -298,7 +294,7 @@ module hart #(
         .i_nxt_pc(fe_nxt_pc),
         .i_vld(fe_vld),
         .i_pc(fe_pc),
-        .i_inst(fe_inst),
+        .i_inst(i_imem_rdata), // Memory access in synchronous so is already pipelined
         .i_flush(fe_flush),
         .i_dmem_addr(ex_dmem_addr),
         .i_rd_waddr(wb_rd_waddr),
@@ -485,7 +481,7 @@ module hart #(
     assign o_retire_rs1_rdata   = wb_rs1_rdata;
     assign o_retire_rs2_rdata   = wb_rs2_rdata;
     assign o_retire_rd_waddr    = wb_rd_waddr;
-    assign o_retire_rd_wdata    = wb_rd_wdata;
+    assign o_retire_rd_wdata    = wb_res;
     assign o_retire_dmem_addr   = wb_dmem_addr;
     assign o_retire_dmem_mask   = wb_dmem_mask;
     assign o_retire_dmem_ren    = wb_dmem_ren;

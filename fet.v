@@ -34,9 +34,6 @@ module fet #(
     output wire         o_flush,
     // Next instruction address to execute
     output wire [31:0]  o_imem_raddr,
-    // Instruction read from memory
-    input wire  [31:0]  i_imem_rdata,
-    output wire [31:0]  o_inst,
     // Next PC value to send to control unit to determine if trap needed
     output wire [31:0]  o_pc,
     output wire [31:0]  o_nxt_pc,
@@ -48,7 +45,6 @@ module fet #(
     wire                flush;
 
     // Register Holding
-    reg [31:0]  inst_ff;
     reg [31:0]  nxt_pc_ff;
     reg [31:0]  pc_ff;
     reg         vld_ff;
@@ -73,11 +69,9 @@ module fet #(
     always @(posedge i_clk) begin
         if (i_rst | flush) begin
             //on reset or flush load add x0 and x0 to x0
-            inst_ff   <= 32'h00000033;
             vld_ff    <= 1'b0;
         end
         else if (!i_hold) begin
-            inst_ff        <= i_imem_rdata;
             nxt_pc_ff      <= nxt_pc;
             pc_ff          <= o_imem_raddr;
             vld_ff         <= 1'b1;
@@ -86,7 +80,6 @@ module fet #(
     end
 
     // Assign output wires to registers
-    assign o_inst   = inst_ff;
     assign o_vld    = vld_ff;
     assign o_nxt_pc = nxt_pc_ff;
     assign o_pc     = pc_ff;

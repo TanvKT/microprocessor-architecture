@@ -138,9 +138,10 @@ module dec
     reg [4:0]   rs2_raddr_ff;
     reg [31:0]  pc_ff;
     reg [31:0]  nxt_pc_ff;
+    reg         wait_ff;    //on reset need to hold noop for a cycle
 
     // Ensure we can flush the instruction to add x0 x0 x0
-    assign inst = (i_flush) ? 32'h00000033 : i_inst;
+    assign inst = (i_flush | wait_ff) ? 32'h00000033 : i_inst;
 
     // Also pass jal and jalr for fe stage
     assign o_jal  = (!vld_ff) ? 1'b0 : jal;
@@ -209,7 +210,7 @@ module dec
     ctrl u_ctrl(.i_rst(i_rst),
                 .i_nxt_pc(i_nxt_pc),
                 .i_dmem_addr(i_dmem_addr),
-                .i_imem_rdata(i_inst),
+                .i_imem_rdata(inst),
                 .i_immediate(immediate),
                 .o_mem_read(mem_read), 
                 .o_mem_reg(mem_reg), 
@@ -245,9 +246,30 @@ module dec
             inst_ff          <= 32'h00000033;
             trap_ff          <= 1'b0;
             break_ff         <= 1'b0;
+            wait_ff          <= 1'b1;
+            mem_reg_ff       <= 1'b0;
+            imm_ff           <= 1'b0;
+            auipc_ff         <= 1'b0;
+            sub_ff           <= 1'b0;
+            unsigned_ff      <= 1'b0;
+            arith_ff         <= 1'b0;
+            pass_ff          <= 1'b0;
+            mem_ff           <= 1'b0;
+            jal_ff           <= 1'b0;
+            jalr_ff          <= 1'b0;
+            rd_waddr_ff      <= 5'd0;
+            rd_wen_ff        <= 1'b1;
+            rs1_rdata_ff     <= 32'd0;
+            rs2_rdata_ff     <= 32'd0;
+            immediate_ff     <= 32'd0;
+            rs1_raddr_ff     <= 5'd0;
+            rs2_raddr_ff     <= 5'd0;
         end
         else if (i_flush) begin
             vld_ff           <= 1'b0;
+        end
+        else begin
+            wait_ff          <= 1'b0;
         end
         if (!id_ex_hold) begin
             mem_read_ff      <= mem_read;

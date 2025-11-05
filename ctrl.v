@@ -90,9 +90,9 @@ assign o_sub        = is_r_type & funct7[5];                    //funct7 always 
 assign o_arith      = funct7[5];                                //funct7 is also used to determine if using arithmetic shift
 assign o_opsel      = funct3;                                   //funct3 determines opsel within alu
 assign o_unsigned   = o_opsel[0];                               //funct3[0] also determines if we take unsigned path
-assign o_rs1_raddr  = (sel_rs1) ? i_imem_rdata[19:15] : 5'd0;          //RS1
-assign o_rs2_raddr  = (sel_rs2) ? i_imem_rdata[24:20] : 5'd0;          //RS2
-assign o_rd_waddr   = (o_rd_wen) ? i_imem_rdata[11:7] : 5'd0;   //RD (need to tie low for test bench purposes)
+assign o_rs1_raddr  = (sel_rs1)  ? i_imem_rdata[19:15] : 5'd0;  //RS1
+assign o_rs2_raddr  = (sel_rs2)  ? i_imem_rdata[24:20] : 5'd0;  //RS2
+assign o_rd_waddr   = (o_rd_wen) ? i_imem_rdata[11:7]  : 5'd0;  //RD (need to tie low for test bench purposes)
 
 // B-Type
 assign o_branch     = is_branch;

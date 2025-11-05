@@ -57,8 +57,6 @@ module ex
     output wire [31:0]  o_nxt_pc
 );
     // Internal Signals
-    wire    [31:0] op1;
-    wire    [31:0] op2;
     wire    [31:0] res;
     wire           slt;
     wire           eq;
@@ -90,8 +88,8 @@ module ex
                 .i_pass(i_pass), 
                 .i_mem(i_mem), 
                 .i_auipc(i_auipc),
-                .i_op1(op1), 
-                .i_op2(op2), 
+                .i_op1(i_rs1_rdata), 
+                .i_op2(i_rs2_rdata), 
                 .o_result(res), 
                 .o_eq(eq), 
                 .o_slt(slt));
@@ -107,6 +105,7 @@ module ex
             mem_reg_ff       <= 1'b0;
             dmem_wdata_ff    <= 32'd0;
             rd_waddr_ff      <= 5'd0;
+            res_ff           <= 32'd0;
             rd_wen_ff        <= 1'b1;
             inst_ff          <= 32'h00000033;
             rs1_raddr_ff     <= 5'd0;
@@ -124,7 +123,7 @@ module ex
             mem_read_ff      <= i_mem_read;
             mem_write_ff     <= i_mem_write;
             dmem_addr_ff     <= res;
-            dmem_wdata_ff    <= op2;
+            dmem_wdata_ff    <= i_rs2_rdata;
             rd_waddr_ff      <= i_rd_waddr;
             rd_wen_ff        <= i_rd_wen;
             vld_ff           <= i_vld;
@@ -132,7 +131,7 @@ module ex
             rs1_raddr_ff     <= i_rs1_raddr;
             rs2_raddr_ff     <= i_rs2_raddr;
             rs1_rdata_ff     <= i_rs1_rdata;
-            rs2_rdata_ff     <= i_rs1_rdata;
+            rs2_rdata_ff     <= i_rs2_rdata;
             pc_ff            <= i_pc;
             nxt_pc_ff        <= i_nxt_pc;
         end

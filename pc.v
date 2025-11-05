@@ -44,18 +44,15 @@ module pc #(
 wire        br_vld;
 wire [31:0] nxt_addr;
 reg  [31:0] curr_addr;
-reg         wait_ff;
 
 /* PC holding FF */
 always @(posedge i_clk) begin
     if (i_rst) begin
         curr_addr <= RESET_ADDR;
-        wait_ff   <= 1'b1;  //need to wait here since instruction data sampled on clk edge
     end
-    else if (!i_halt & !wait_ff)  // Hold PC on Halt
+    else if (!i_halt)  // Hold PC on Halt
         curr_addr <= nxt_addr;
-    else //hold and unset wait
-        wait_ff   <= 1'b0;
+    // Implied else hold
 end
 
 /* Determine Branch validity */
@@ -74,6 +71,6 @@ assign nxt_addr         = (br_vld | i_jal)    ? curr_addr + i_immediate :   //In
 /* Link output wire */
 assign o_imem_raddr = curr_addr;
 assign o_nxt_pc     = nxt_addr;
-assign o_flush      = wait_ff;
+assign o_flush      = 1'b0;  //TODO: Implement branch resolution
 
 endmodule
