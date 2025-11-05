@@ -14,6 +14,9 @@ module dec
     input  wire         i_vld,
     input  wire [31:0]  i_pc,
 
+    // Flush Register
+    input wire          i_flush,
+
     // Instruction data
     input  wire [31:0]  i_inst,
     input  wire [31:0]  i_dmem_addr,
@@ -68,6 +71,7 @@ module dec
 );
 
     // Internal Signals
+    wire [31:0] inst;         // Instruction
     wire [31:0] immediate;    // Immediate value
     wire [ 4:0] rs1_raddr;    // RS1 address (inst[19:15])
     wire [ 4:0] rs2_raddr;    // RS2 address (inst[24:20])
@@ -133,8 +137,11 @@ module dec
     reg [31:0]  pc_ff;
     reg [31:0]  nxt_pc_ff;
 
+    // Check if we need to reset instruction to add x0 x0 x0 on flush
+    assign inst = (i_flush) ? 32'h00000033 : i_inst;
+
     // Immediate Encoder
-    imm  u_imm( .i_inst(i_inst), 
+    imm  u_imm( .i_inst(inst), 
                 .i_format(format), 
                 .o_immediate(immediate));
 
@@ -196,15 +203,15 @@ module dec
     ctrl u_ctrl(.i_rst(i_rst),
                 .i_nxt_pc(i_nxt_pc),
                 .i_dmem_addr(i_dmem_addr),
-                .i_imem_rdata(i_inst),
+                .i_imem_rdata(inst),
                 .i_immediate(immediate),
                 .o_mem_read(mem_read), 
                 .o_mem_reg(mem_reg), 
-                .o_mem_write(dmem_wen), 
+                .o_mem_write(mem_write), 
                 .o_imm(imm), 
                 .o_auipc(auipc), 
-                .o_break(retire_halt), 
-                .o_trap(retire_trap),
+                .o_break(break), 
+                .o_trap(trap),
                 .o_branch(branch),
                 .o_opsel(opsel), 
                 .o_sub(sub), 
@@ -227,6 +234,9 @@ module dec
             vld_ff           <= 1'b0;
             mem_read_ff      <= 1'b0;
             mem_write_ff     <= 1'b0;
+        end
+        if (i_flush) begin
+            vld_ff              <= 1'b0;
         end
         if (!id_ex_hold) begin
             mem_read_ff      <= mem_read;
@@ -251,7 +261,7 @@ module dec
             rs2_rdata_ff     <= op2;
             immediate_ff     <= immediate;
             vld_ff           <= i_vld;
-            inst_ff          <= i_inst;
+            inst_ff          <= inst;
             rs1_raddr_ff     <= rs1_raddr;
             rs2_raddr_ff     <= rs2_raddr;
             pc_ff            <= i_pc;

@@ -13,6 +13,7 @@ module ex
     input  wire         i_imm,
     input  wire         i_jal,
     input  wire         i_jalr,
+    input  wire         i_arith,
     input  wire         i_mem_reg,
     input  wire         i_mem_read,
     input  wire         i_mem_write,

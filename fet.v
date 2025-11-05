@@ -28,6 +28,8 @@ module fet
     input wire  [31:0]  i_immediate,
     //RS1 input for jalr instruction
     input wire  [31:0]  i_rs1,
+    // Indicates need to flush
+    output wire         o_flush,
     // Next instruction address to execute
     output wire [31:0]  o_imem_raddr,
     // Instruction read from memory

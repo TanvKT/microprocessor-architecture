@@ -171,6 +171,7 @@ module hart #(
     wire [31:0]             fe_nxt_pc;
     wire                    fe_vld;
     wire [31:0]             fe_pc;
+    wire                    fe_flush;
 
     // Decode
     wire                    de_mem_read;
@@ -282,6 +283,7 @@ module hart #(
         .i_rs1(de_rs1_rdata),
         .o_imem_raddr(o_imem_raddr),
         .i_imem_rdata(i_imem_rdata),
+        .o_flush(fe_flush),
         .o_inst(fe_inst),
         .o_nxt_pc(fe_nxt_pc),
         .o_pc(fe_pc),
@@ -296,6 +298,7 @@ module hart #(
         .i_vld(fe_vld),
         .i_pc(fe_pc),
         .i_inst(fe_inst),
+        .i_flush(fe_flush),
         .i_dmem_addr(ex_dmem_addr),
         .i_rd_waddr(wb_rd_waddr),
         .i_rd_wen(wb_rd_wen),
@@ -342,6 +345,7 @@ module hart #(
         .i_imm(de_imm),
         .i_jalr(de_jalr),
         .i_jal(de_jal),
+        .i_arith(de_arith),
         .i_mem_reg(de_mem_reg),
         .i_mem_read(de_mem_read),
         .i_mem_write(de_mem_write),
