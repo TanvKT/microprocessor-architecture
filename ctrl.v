@@ -81,13 +81,17 @@ wire invalid_l_type     = is_load & (funct3 != 3'b000) & (funct3 != 3'b001) & (f
 wire invalid_s_type     = is_store & (funct3 != 3'b000) & (funct3 != 3'b001) & (funct3 != 3'b010);
 wire invalid_b_type     = is_branch & (funct3 != 3'b000) & (funct3 != 3'b001) & (funct3 != 3'b100) & (funct3 != 3'b101) & (funct3 != 3'b110) & (funct3 != 3'b111);
 
+// Select signals for if rs1 or rs2 are used
+wire sel_rs1        = !is_lui & !is_auipc & !is_jal & !is_system;
+wire sel_rs2        = !is_lui & !is_auipc & !is_jal & !is_system & !is_itype_alu & !is_load & !is_jalr;
+
 // Parse instruction further into sub-parts to ease readability
 assign o_sub        = is_r_type & funct7[5];                    //funct7 always determines if sub (only R-Type)
 assign o_arith      = funct7[5];                                //funct7 is also used to determine if using arithmetic shift
 assign o_opsel      = funct3;                                   //funct3 determines opsel within alu
 assign o_unsigned   = o_opsel[0];                               //funct3[0] also determines if we take unsigned path
-assign o_rs1_raddr  = i_imem_rdata[19:15];                      //RS1
-assign o_rs2_raddr  = i_imem_rdata[24:20];                      //RS2
+assign o_rs1_raddr  = (sel_rs1) ? i_imem_rdata[19:15] : 5'd0;          //RS1
+assign o_rs2_raddr  = (sel_rs2) ? i_imem_rdata[24:20] : 5'd0;          //RS2
 assign o_rd_waddr   = (o_rd_wen) ? i_imem_rdata[11:7] : 5'd0;   //RD (need to tie low for test bench purposes)
 
 // B-Type

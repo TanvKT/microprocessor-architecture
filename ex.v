@@ -19,8 +19,6 @@ module ex
     input  wire [31:0]  i_pc,
     input  wire [31:0]  i_rs1_rdata,
     input  wire [31:0]  i_rs2_rdata,
-    input  wire [31:0]  i_alu_res,
-    input  wire [31:0]  i_mem_res,
     input  wire [31:0]  i_immediate,
     input  wire [2:0]   i_opsel,
     input  wire [4:0]   i_rd_waddr,
@@ -30,11 +28,6 @@ module ex
     input  wire         i_unsigned,
     input  wire         i_pass,
     input  wire         i_mem,
-
-    input wire          i_frwd_alu_op1, //forward from alu result op1
-    input wire          i_frwd_mem_op1, //forward from memory result op1
-    input wire          i_frwd_alu_op2, //forward from alu result op2
-    input wire          i_frwd_mem_op2, //forward from memory result op2
 
     input wire [31:0]      i_inst,
     input wire [4:0]       i_rs1_raddr,
@@ -86,25 +79,6 @@ module ex
     reg [31:0]   rs2_rdata_ff;
     reg [31:0]   pc_ff;
     reg [31:0]   nxt_pc_ff;
-
-    // Arithmetic Logic Unit Operand Selection (forwarding unit)
-    frwd frwd( .i_auipc(i_auipc),
-                .i_imm(i_imm),
-                .i_jal(i_jal),
-                .i_jalr(i_jalr),
-                .i_mem_reg(i_mem_reg),
-                .i_pc(i_pc),
-                .i_rs1_rdata(i_rs1_rdata),
-                .i_rs2_rdata(i_rs2_rdata),
-                .i_alu_res(i_alu_res),
-                .i_mem_res(i_mem_res),
-                .i_immediate(i_immediate),
-                .i_frwd_alu_op1(i_frwd_alu_op1),
-                .i_frwd_mem_op1(i_frwd_mem_op1),
-                .i_frwd_alu_op2(i_frwd_alu_op2),
-                .i_frwd_mem_op2(i_frwd_mem_op2),
-                .o_op1(op1),
-                .o_op2(op2));
 
     // Arithmetic Logic Unit
     alu  alu( .i_opsel(i_opsel), 

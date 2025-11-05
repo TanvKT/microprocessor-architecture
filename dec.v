@@ -23,6 +23,11 @@ module dec
     input  wire         i_rd_wen,
     input  wire [31:0]  i_rd_wdata,
 
+    // Forward inputs
+    input wire [31:0]   i_ex_alu_res,
+    input wire [31:0]   i_mem_alu_res,
+    input wire [31:0]   i_mem_res,
+
     // Control outputs
     output wire             o_mem_read,     // Asserted if reading from memory
     output wire             o_mem_reg,      // Asserted if writing memory value to register file
@@ -53,12 +58,6 @@ module dec
     // Instruction Valid
     output wire             o_vld,
     output wire             o_hold,
-
-    // Forwarding Signals
-    output wire          o_frwd_alu_op1, //forward from alu result op1
-    output wire          o_frwd_mem_op1, //forward from memory result op1
-    output wire          o_frwd_alu_op2, //forward from alu result op2
-    output wire          o_frwd_mem_op2, //forward from memory result op2
 
     // Pipelining debug signals
     output wire [31:0]      o_inst,
@@ -95,6 +94,15 @@ module dec
     wire [4:0]  rd_waddr;     // Register file address to write to for current instruction
     wire        if_id_hold;   // Hold IF/ID register
     wire        id_ex_hold;   // Hold ID/EX register
+    // Forwarding Signals
+    wire        frwd_alu_op1;       //forward from alu result op1
+    wire        frwd_mem_alu_op1;   //forward from mem alu res op1
+    wire        frwd_mem_op1;       //forward from memory result op1
+    wire        frwd_alu_op2;       //forward from alu result op2
+    wire        frwd_mem_alu_op2;   //forward from mem alu res op2
+    wire        frwd_mem_op2;       //forward from memory result op2
+    wire [31:0] op1;                // Op1 passed to ALU
+    wire [31:0] op2;                // Op2 passed to ALU
 
     /* Registers for Pipeline */
     reg         mem_read_ff;
@@ -149,13 +157,40 @@ module dec
                 .i_rst(i_rst),
                 .i_rd_wen(rd_wen),
                 .i_rd_waddr(rd_waddr),
+                .i_rs1_raddr(rs1_raddr),
+                .i_rs2_raddr(rs2_raddr),
+                .i_is_load(mem_read),
                 .o_if_id_halt(if_id_hold),
                 .o_id_ex_halt(id_ex_hold),
-                .o_frwd_alu_op1(o_frwd_alu_op1),
-                .o_frwd_mem_op1(o_frwd_mem_op1),
-                .o_frwd_alu_op2(o_frwd_alu_op2),
-                .o_frwd_mem_op2(o_frwd_mem_op2)
+                .o_frwd_alu_op1(frwd_alu_op1),
+                .o_frwd_mem_alu_op1(frwd_mem_alu_op1),
+                .o_frwd_mem_op1(frwd_mem_op1),
+                .o_frwd_alu_op2(frwd_alu_op2),
+                .o_frwd_mem_alu_op2(frwd_mem_alu_op2),
+                .o_frwd_mem_op2(frwd_mem_op2)
     );
+
+    // Arithmetic Logic Unit Operand Selection (forwarding unit)
+    frwd frwd( .i_auipc(auipc),
+                .i_imm(imm),
+                .i_jal(jal),
+                .i_jalr(jalr),
+                .i_mem_reg(mem_reg),
+                .i_pc(i_pc),
+                .i_rs1_rdata(rs1_rdata),
+                .i_rs2_rdata(rs2_rdata),
+                .i_ex_alu_res(i_ex_alu_res),
+                .i_mem_alu_res(i_mem_alu_res),
+                .i_mem_res(i_mem_res),
+                .i_immediate(immediate),
+                .i_frwd_alu_op1(frwd_alu_op1),
+                .i_frwd_mem_alu_op1(frwd_mem_alu_op1),
+                .i_frwd_mem_op1(frwd_mem_op1),
+                .i_frwd_alu_op2(frwd_alu_op2),
+                .i_frwd_mem_alu_op2(frwd_mem_alu_op2),
+                .i_frwd_mem_op2(frwd_mem_op2),
+                .o_op1(op1),
+                .o_op2(op2));
 
     // Control Unit
     ctrl u_ctrl(.i_rst(i_rst),
@@ -212,8 +247,8 @@ module dec
             jalr_ff          <= jalr;
             rd_waddr_ff      <= rd_waddr;
             rd_wen_ff        <= rd_wen;
-            rs1_rdata_ff     <= rs1_rdata;
-            rs2_rdata_ff     <= rs2_rdata;
+            rs1_rdata_ff     <= op1;
+            rs2_rdata_ff     <= op2;
             immediate_ff     <= immediate;
             vld_ff           <= i_vld;
             inst_ff          <= i_inst;

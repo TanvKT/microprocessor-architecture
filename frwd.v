@@ -22,12 +22,15 @@ module frwd
     input wire [31:0]   i_rs2_rdata,    //rs2 data from rf
     input wire [31:0]   i_immediate,    //immediate value
 
-    input wire          i_frwd_alu_op1, //forward from alu result op1
-    input wire          i_frwd_mem_op1, //forward from memory result op1
-    input wire          i_frwd_alu_op2, //forward from alu result op2
-    input wire          i_frwd_mem_op2, //forward from memory result op2
+    input wire          i_frwd_alu_op1,     //forward from alu result op1
+    input wire          i_frwd_mem_alu_op1, //forward from mem alu res op1
+    input wire          i_frwd_mem_op1,     //forward from memory result op1
+    input wire          i_frwd_alu_op2,     //forward from alu result op2
+    input wire          i_frwd_mem_alu_op2, //forward from memory resutl op2
+    input wire          i_frwd_mem_op2,     //forward from memory result op2
 
-    input wire [31:0]   i_alu_res,      //alu output
+    input wire [31:0]   i_ex_alu_res,   //alu in ex stage output
+    input wire [31:0]   i_mem_alu_res,  //alu in mem stage output
     input wire [31:0]   i_mem_res,      //memory output
 
     output wire [31:0]  o_op1,          //alu op1
@@ -35,8 +38,17 @@ module frwd
 );
 
     // Data being fed to ALU changes based on specific instruction
-    assign o_op1                  =   (i_auipc)             ?   i_pc :   i_rs1_rdata;
-    assign o_op2                  =   (i_imm)               ?   i_immediate   :
+    assign o_op1                  =   (i_frwd_alu_op1)      ?   i_ex_alu_res :
+                                      (i_frwd_mem_alu_op1)  ?   i_mem_alu_res :
+                                      (i_frwd_mem_op1)      ?   i_mem_res :
+                                      (i_auipc)             ?   i_pc :   
+                                                                i_rs1_rdata;
+
+
+    assign o_op2                  =   (i_frwd_alu_op2)      ?   i_ex_alu_res :
+                                      (i_frwd_mem_alu_op2)  ?   i_mem_alu_res :
+                                      (i_frwd_mem_op2)      ?   i_mem_res :
+                                      (i_imm)               ?   i_immediate   :
                                       (i_jal | i_jalr)      ?   32'd4       :       // When we are jumping, pc is loaded to op1
                                                                             // So we need to store pc + 4 in rd
                                                                 i_rs2_rdata;

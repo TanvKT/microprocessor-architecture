@@ -16,6 +16,11 @@ module wb
     input wire [4:0]    i_rs2_raddr,
     input wire [31:0]   i_rs1_rdata,
     input wire [31:0]   i_rs2_rdata,
+    input wire [31:0]   i_dmem_addr,
+    input wire [3:0]    i_dmem_mask,
+    input wire          i_dmem_ren,
+    input wire          i_dmem_wen,
+    input wire [31:0]   i_dmem_wdata,
     input wire [31:0]   i_pc,
     input wire [31:0]   i_nxt_pc,
 
@@ -28,6 +33,12 @@ module wb
     output wire [4:0]   o_rs2_raddr,
     output wire [31:0]  o_rs1_rdata,
     output wire [31:0]  o_rs2_rdata,
+    output wire [31:0]  o_dmem_addr,
+    output wire [3:0]   o_dmem_mask,
+    output wire         o_dmem_ren,
+    output wire         o_dmem_wen,
+    output wire [31:0]  o_dmem_rdata,
+    output wire [31:0]  o_dmem_wdata,
     output wire [31:0]  o_pc,
     output wire [31:0]  o_nxt_pc
 );
@@ -42,6 +53,12 @@ assign o_rs1_raddr     = i_rs1_raddr;
 assign o_rs2_raddr     = i_rs2_raddr;
 assign o_rs1_rdata     = i_rs1_rdata;
 assign o_rs2_rdata     = i_rs2_rdata;
+assign o_dmem_addr     = i_dmem_addr;
+assign o_dmem_mask     = i_dmem_mask;
+assign o_dmem_wen      = i_dmem_wen;
+assign o_dmem_ren      = i_dmem_ren;
+assign o_dmem_rdata    = i_dmem_rdata;
+assign o_dmem_wdata    = i_dmem_wdata;
 assign o_pc            = i_pc;
 assign o_nxt_pc        = i_nxt_pc;
 
