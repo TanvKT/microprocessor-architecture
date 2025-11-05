@@ -38,6 +38,7 @@ module ex
     output wire         o_slt,
     output wire         o_eq,
     output wire [31:0]  o_res,
+    output wire [31:0]  o_res_ff,
     output wire [4:0]   o_rd_waddr,
     output wire         o_rd_wen,
     output wire         o_mem_reg,
@@ -138,7 +139,8 @@ module ex
     end
 
     // Assign wires to register
-    assign o_res           = res_ff;
+    assign o_res           = res;
+    assign o_res_ff        = res_ff;
     assign o_opsel         = opsel_ff;
     assign o_mem_reg       = mem_reg_ff;
     assign o_mem_read      = mem_read_ff;

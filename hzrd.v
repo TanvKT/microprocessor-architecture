@@ -23,9 +23,6 @@ module hzrd
 );
 
     // Internal Signals
-    reg [4:0]   dec_waddr;
-    reg         dec_is_load;
-
     reg [4:0]   ex_waddr;
     reg         ex_is_load;
 
@@ -74,9 +71,6 @@ module hzrd
     always @(posedge i_clk) begin
         if (i_rst) begin
             // Default all to zero
-            dec_waddr   <= 5'd0;
-            dec_is_load <= 1'b0;
-
             ex_waddr    <= 5'd0;
             ex_is_load  <= 1'b0;
 
@@ -85,11 +79,8 @@ module hzrd
         end
         else begin
             // Else start shifting
-            dec_waddr   <= nxt_waddr;
-            dec_is_load <= nxt_is_load;
-
-            ex_waddr   <= dec_waddr;
-            ex_is_load <= dec_is_load;
+            ex_waddr   <= nxt_waddr;
+            ex_is_load <= nxt_is_load;
 
             mem_waddr   <= ex_waddr;
             mem_is_load <= ex_is_load;

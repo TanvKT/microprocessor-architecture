@@ -208,6 +208,7 @@ module hart #(
     wire                    ex_slt;
     wire                    ex_eq;
     wire [31:0]             ex_res;
+    wire [31:0]             ex_res_ff;
     wire                    ex_mem_reg;
     wire                    ex_mem_read;
     wire                    ex_mem_write;
@@ -301,7 +302,7 @@ module hart #(
         .i_rd_wen(wb_rd_wen),
         .i_rd_wdata(wb_res),
         .i_ex_alu_res(ex_res),
-        .i_mem_alu_res(mem_res),
+        .i_mem_alu_res(ex_res_ff),
         .i_mem_res(mem_dmem_rdata),
         .o_mem_read(de_mem_read),
         .o_mem_reg(de_mem_reg),
@@ -367,6 +368,7 @@ module hart #(
         .o_slt(ex_slt),
         .o_eq(ex_eq),
         .o_res(ex_res),
+        .o_res_ff(ex_res_ff),
         .o_mem_reg(ex_mem_reg),
         .o_mem_read(ex_mem_read),
         .o_mem_write(ex_mem_write),
@@ -406,7 +408,7 @@ module hart #(
         .i_dmem_ren(ex_mem_read),
         .i_dmem_wen(ex_mem_write),
         .i_mem_reg(ex_mem_reg),
-        .i_res(ex_res),
+        .i_res(ex_res_ff),
         .o_mem_reg(mem_mem_reg),
         .o_res(mem_res),
         .o_rd_waddr(mem_rd_waddr),

@@ -18,8 +18,7 @@ module pc #(
     input wire          i_eq,           // OP1 and OP2 Equal
     input wire          i_slt,          // OP1 < OP2
     input wire [2:0]    i_opsel,        // Branch opsel
-    input wire          i_branch,       // Current Instruction is branch
-
+    input wire          i_branch,       // Instruction in Ex stage is branch
     
     // Asserts if we want to load a specific address into the pc (jump)
     input wire          i_jal,
@@ -57,7 +56,7 @@ end
 
 /* Determine Branch validity */
 // B-Type
-assign br_vld       = i_branch &  ((i_eq   & (i_opsel == 3'b000)) | (~i_eq & (i_opsel == 3'b001)) | // Need to invert result if bne taken
+assign br_vld       = i_branch &   ((i_eq   & (i_opsel == 3'b000)) | (~i_eq & (i_opsel == 3'b001)) | // Need to invert result if bne taken
                                     (i_slt  & ((i_opsel == 3'b100) | (i_opsel == 3'b110))) |         // If Less Than instruction
                                     (~i_slt & ((i_opsel == 3'b101) | (i_opsel == 3'b111))));         // If Greater Than or Equal
 
@@ -71,6 +70,6 @@ assign nxt_addr         = (br_vld | i_jal)    ? curr_addr + i_immediate :   //In
 /* Link output wire */
 assign o_imem_raddr = curr_addr;
 assign o_nxt_pc     = nxt_addr;
-assign o_flush      = 1'b0;  //TODO: Implement branch resolution
+assign o_flush      = br_vld;  // Flush if branch valid
 
 endmodule
