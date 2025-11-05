@@ -6,6 +6,5 @@ work/_info
 *.qtl
 work/_vmake
 ECE552.cr.mti
-tb.v
 hart.vcd
 vsim.wlf
