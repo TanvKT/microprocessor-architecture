@@ -44,7 +44,6 @@ module ex
     output wire         o_mem_read,
     output wire         o_mem_write,
     output wire [2:0]   o_opsel,
-    output wire         o_branch,
     output wire [31:0]  o_dmem_addr,
     output wire [31:0]  o_dmem_wdata,
     output wire         o_vld,
@@ -61,6 +60,8 @@ module ex
     wire    [31:0] op1;
     wire    [31:0] op2;
     wire    [31:0] res;
+    wire           slt;
+    wire           eq;
 
     // Registers
     reg [31:0]   res_ff;
@@ -92,34 +93,49 @@ module ex
                 .i_op1(op1), 
                 .i_op2(op2), 
                 .o_result(res), 
-                .o_eq(o_eq), 
-                .o_slt(o_slt));
+                .o_eq(eq), 
+                .o_slt(slt));
 
     // EX/MEM Register
     always @(posedge i_clk) begin
-        // Only need reset for certain signals
+        // Reset to add x0 x0 x0
         if (i_rst) begin
-            vld_ff       <= 1'b0;
-            mem_read_ff  <= 1'b0;
-            mem_write_ff <= 1'b0;
+            vld_ff           <= 1'b0;
+            mem_read_ff      <= 1'b0;
+            mem_write_ff     <= 1'b0;
+            opsel_ff         <= 3'b000;
+            mem_reg_ff       <= 1'b0;
+            dmem_wdata_ff    <= 32'd0;
+            rd_waddr_ff      <= 5'd0;
+            rd_wen_ff        <= 1'b1;
+            inst_ff          <= 32'h00000033;
+            rs1_raddr_ff     <= 5'd0;
+            rs2_raddr_ff     <= 5'd0;
+            rs1_rdata_ff     <= 32'd0;
+            rs2_rdata_ff     <= 32'd0;
+            pc_ff            <= 32'd0;
+            nxt_pc_ff        <= 32'd0;
+            
         end
-        res_ff           <= res;
-        opsel_ff         <= i_opsel;
-        mem_reg_ff       <= i_mem_reg;
-        mem_read_ff      <= i_mem_read;
-        mem_write_ff     <= i_mem_write;
-        dmem_addr_ff     <= res;
-        dmem_wdata_ff    <= op2;
-        rd_waddr_ff      <= i_rd_waddr;
-        rd_wen_ff        <= i_rd_wen;
-        vld_ff           <= i_vld;
-        inst_ff          <= i_inst;
-        rs1_raddr_ff     <= i_rs1_raddr;
-        rs2_raddr_ff     <= i_rs2_raddr;
-        rs1_rdata_ff     <= i_rs1_rdata;
-        rs2_rdata_ff     <= i_rs1_rdata;
-        pc_ff            <= i_pc;
-        nxt_pc_ff        <= i_nxt_pc;
+        else begin
+            res_ff           <= res;
+            opsel_ff         <= i_opsel;
+            mem_reg_ff       <= i_mem_reg;
+            mem_read_ff      <= i_mem_read;
+            mem_write_ff     <= i_mem_write;
+            dmem_addr_ff     <= res;
+            dmem_wdata_ff    <= op2;
+            rd_waddr_ff      <= i_rd_waddr;
+            rd_wen_ff        <= i_rd_wen;
+            vld_ff           <= i_vld;
+            inst_ff          <= i_inst;
+            rs1_raddr_ff     <= i_rs1_raddr;
+            rs2_raddr_ff     <= i_rs2_raddr;
+            rs1_rdata_ff     <= i_rs1_rdata;
+            rs2_rdata_ff     <= i_rs1_rdata;
+            pc_ff            <= i_pc;
+            nxt_pc_ff        <= i_nxt_pc;
+        end
     end
 
     // Assign wires to register
@@ -140,5 +156,9 @@ module ex
     assign o_rs2_rdata     = rs1_rdata_ff;
     assign o_pc            = pc_ff;
     assign o_nxt_pc        = nxt_pc_ff;
+
+    // Ensure that on reset slt and eq are tied to zero
+    assign o_slt        = (!vld_ff) ? 1'b0 : slt;
+    assign o_eq         = (!vld_ff) ? 1'b0 : eq;
 
 endmodule

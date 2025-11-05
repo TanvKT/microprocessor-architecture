@@ -94,24 +94,26 @@ module mem
         if (i_rst) begin
             vld_ff <= 1'b0;
         end
-        mem_reg_ff       <= i_mem_reg;
-        res_ff           <= i_res;
-        rd_waddr_ff      <= i_rd_waddr;
-        rd_wen_ff        <= i_rd_wen;
-        dmem_rdata_ff    <= dmem_rdata;
-        vld_ff           <= i_vld;
-        inst_ff          <= i_inst;
-        rs1_raddr_ff     <= i_rs1_raddr;
-        rs2_raddr_ff     <= i_rs2_raddr;
-        rs1_rdata_ff     <= i_rs1_rdata;
-        rs2_rdata_ff     <= i_rs2_rdata;
-        dmem_addr_ff     <= o_dmem_addr;
-        dmem_mask_ff     <= o_dmem_mask;
-        dmem_ren_ff      <= o_dmem_ren;
-        dmem_wen_ff      <= o_dmem_wen;
-        dmem_wdata_ff    <= o_dmem_wdata;
-        pc_ff            <= i_pc;
-        nxt_pc_ff        <= i_nxt_pc;
+        else begin
+            mem_reg_ff       <= i_mem_reg;
+            res_ff           <= i_res;
+            rd_waddr_ff      <= i_rd_waddr;
+            rd_wen_ff        <= i_rd_wen;
+            dmem_rdata_ff    <= dmem_rdata;
+            vld_ff           <= i_vld;
+            inst_ff          <= i_inst;
+            rs1_raddr_ff     <= i_rs1_raddr;
+            rs2_raddr_ff     <= i_rs2_raddr;
+            rs1_rdata_ff     <= i_rs1_rdata;
+            rs2_rdata_ff     <= i_rs2_rdata;
+            dmem_addr_ff     <= o_dmem_addr;
+            dmem_mask_ff     <= o_dmem_mask;
+            dmem_ren_ff      <= o_dmem_ren;
+            dmem_wen_ff      <= o_dmem_wen;
+            dmem_wdata_ff    <= o_dmem_wdata;
+            pc_ff            <= i_pc;
+            nxt_pc_ff        <= i_nxt_pc;
+        end
     end
 
     // Assign Registers to wires

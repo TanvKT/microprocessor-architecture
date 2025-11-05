@@ -2,7 +2,9 @@
 *   Fetch Block of Pipeline
 */
 
-module fet
+module fet #(
+    parameter RESET_ADDR = 32'h00000000
+)
 (
     // Global clock.
     input  wire         i_clk,
@@ -49,7 +51,6 @@ module fet
     reg [31:0]  inst_ff;
     reg [31:0]  nxt_pc_ff;
     reg [31:0]  pc_ff;
-    reg         flush_ff;
     reg         vld_ff;
 
     // Program Counter
@@ -79,7 +80,6 @@ module fet
             inst_ff        <= i_imem_rdata;
             nxt_pc_ff      <= nxt_pc;
             pc_ff          <= o_imem_raddr;
-            flush_ff       <= flush;
             vld_ff         <= 1'b1;
         end
         // Implied else hold value
@@ -90,6 +90,6 @@ module fet
     assign o_vld    = vld_ff;
     assign o_nxt_pc = nxt_pc_ff;
     assign o_pc     = pc_ff;
-    assign o_flush  = flush_ff;
+    assign o_flush  = flush;
 
 endmodule

@@ -190,6 +190,8 @@ module hart #(
     wire                    de_mem;
     wire                    de_jal;
     wire                    de_jalr;
+    wire                    de_jal_ff;
+    wire                    de_jalr_ff;
     wire [31:0]             de_immediate;
     wire [4:0]              de_rd_waddr;
     wire                    de_rd_wen;
@@ -213,7 +215,6 @@ module hart #(
     wire [2:0]              ex_opsel;
     wire [4:0]              ex_rd_waddr;
     wire                    ex_rd_wen;
-    wire                    ex_branch;
     wire [31:0]             ex_dmem_addr;
     wire [31:0]             ex_dmem_wdata;
     wire                    ex_vld;
@@ -273,8 +274,8 @@ module hart #(
         .i_rst(i_rst),
         .i_eq(ex_eq),
         .i_slt(ex_slt),
-        .i_opsel(ex_opsel),
-        .i_branch(ex_branch),
+        .i_opsel(de_opsel),
+        .i_branch(de_branch),
         .i_jal(de_jal),
         .i_jalr(de_jalr),
         .i_halt(de_break),
@@ -322,6 +323,8 @@ module hart #(
         .o_mem(de_mem),
         .o_jal(de_jal),
         .o_jalr(de_jalr),
+        .o_jal_ff(de_jal_ff),
+        .o_jalr_ff(de_jalr_ff),
         .o_immediate(de_immediate),
         .o_rd_waddr(de_rd_waddr),
         .o_rd_wen(de_rd_wen),
@@ -343,8 +346,8 @@ module hart #(
         .i_vld(de_vld),
         .i_auipc(de_auipc),
         .i_imm(de_imm),
-        .i_jalr(de_jalr),
-        .i_jal(de_jal),
+        .i_jalr(de_jalr_ff),
+        .i_jal(de_jal_ff),
         .i_arith(de_arith),
         .i_mem_reg(de_mem_reg),
         .i_mem_read(de_mem_read),
@@ -374,7 +377,6 @@ module hart #(
         .o_opsel(ex_opsel),
         .o_rd_waddr(ex_rd_waddr),
         .o_rd_wen(ex_rd_wen),
-        .o_branch(ex_branch),
         .o_dmem_addr(ex_dmem_addr),
         .o_dmem_wdata(ex_dmem_wdata),
         .o_vld(ex_vld),

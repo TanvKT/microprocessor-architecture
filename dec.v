@@ -50,6 +50,8 @@ module dec
     output wire             o_mem,          // Asserted on load/store instruction
     output wire             o_jal,          // Asserted on jump instruction
     output wire             o_jalr,         // Asserted on jalr instruction
+    output wire             o_jal_ff,
+    output wire             o_jalr_ff,
     output wire [31:0]      o_immediate,    // Immediate value
 
     // Register Control
@@ -137,8 +139,12 @@ module dec
     reg [31:0]  pc_ff;
     reg [31:0]  nxt_pc_ff;
 
-    // Check if we need to reset instruction to add x0 x0 x0 on flush
+    // Ensure we can flush the instruction to add x0 x0 x0
     assign inst = (i_flush) ? 32'h00000033 : i_inst;
+
+    // Also pass jal and jalr for fe stage
+    assign o_jal  = (!vld_ff) ? 1'b0 : jal;
+    assign o_jalr = (!vld_ff) ? 1'b0 : jalr;
 
     // Immediate Encoder
     imm  u_imm( .i_inst(inst), 
@@ -203,7 +209,7 @@ module dec
     ctrl u_ctrl(.i_rst(i_rst),
                 .i_nxt_pc(i_nxt_pc),
                 .i_dmem_addr(i_dmem_addr),
-                .i_imem_rdata(inst),
+                .i_imem_rdata(i_inst),
                 .i_immediate(immediate),
                 .o_mem_read(mem_read), 
                 .o_mem_reg(mem_reg), 
@@ -229,14 +235,19 @@ module dec
 
     // ID/EX register
     always @(posedge i_clk) begin
-        // Only need reset for certain signals
+        // Reset to no-op add x0 x0 x0
         if (i_rst) begin
             vld_ff           <= 1'b0;
             mem_read_ff      <= 1'b0;
             mem_write_ff     <= 1'b0;
+            branch_ff        <= 1'b0;
+            opsel_ff         <= 3'b000;
+            inst_ff          <= 32'h00000033;
+            trap_ff          <= 1'b0;
+            break_ff         <= 1'b0;
         end
-        if (i_flush) begin
-            vld_ff              <= 1'b0;
+        else if (i_flush) begin
+            vld_ff           <= 1'b0;
         end
         if (!id_ex_hold) begin
             mem_read_ff      <= mem_read;
@@ -288,8 +299,8 @@ module dec
     assign o_arith         = arith_ff;
     assign o_pass          = pass_ff;
     assign o_mem           = mem_ff;
-    assign o_jal           = jal_ff;
-    assign o_jalr          = jalr_ff;
+    assign o_jal_ff        = jal_ff;
+    assign o_jalr_ff       = jalr_ff;
     assign o_rd_waddr      = rd_waddr_ff;
     assign o_rd_wen        = rd_wen_ff;
     assign o_rs1_rdata     = rs1_rdata_ff;
