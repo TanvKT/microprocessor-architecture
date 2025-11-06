@@ -192,8 +192,10 @@ module hart #(
     wire                    de_jal_ff;
     wire                    de_jalr_ff;
     wire [31:0]             de_immediate;
+    wire [31:0]             de_immediate_ff;
     wire [4:0]              de_rd_waddr;
     wire                    de_rd_wen;
+    wire [31:0]             de_jalr_rs1;
     wire [31:0]             de_rs1_rdata;
     wire [31:0]             de_rs2_rdata;
     wire                    de_vld;
@@ -279,8 +281,9 @@ module hart #(
         .i_jalr(de_jalr),
         .i_halt(de_break),
         .i_hold(de_hold),
-        .i_immediate(de_immediate),
-        .i_rs1(de_rs1_rdata),
+        .i_immediate_de(de_immediate),
+        .i_immediate_ex(de_immediate_ff),
+        .i_rs1(de_jalr_rs1),
         .o_imem_raddr(o_imem_raddr),
         .o_flush(fe_flush),
         .o_nxt_pc(fe_nxt_pc),
@@ -323,8 +326,10 @@ module hart #(
         .o_jal_ff(de_jal_ff),
         .o_jalr_ff(de_jalr_ff),
         .o_immediate(de_immediate),
+        .o_immediate_ff(de_immediate_ff),
         .o_rd_waddr(de_rd_waddr),
         .o_rd_wen(de_rd_wen),
+        .o_jalr_rs1(de_jalr_rs1),
         .o_rs1_rdata(de_rs1_rdata),
         .o_rs2_rdata(de_rs2_rdata),
         .o_vld(de_vld),
@@ -356,7 +361,7 @@ module hart #(
         .i_rs2_rdata(de_rs2_rdata),
         .i_rs1_raddr(de_rs1_raddr),
         .i_rs2_raddr(de_rs2_raddr),
-        .i_immediate(de_immediate),
+        .i_immediate(de_immediate_ff),
         .i_opsel(de_opsel),
         .i_rd_waddr(de_rd_waddr),
         .i_rd_wen(de_rd_wen),

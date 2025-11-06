@@ -27,7 +27,8 @@ module fet #(
 
     /* Address Signals */
     // Immediate value used for Branch and Jump
-    input wire  [31:0]  i_immediate,
+    input wire  [31:0]  i_immediate_de,
+    input wire  [31:0]  i_immediate_ex,
     //RS1 input for jalr instruction
     input wire  [31:0]  i_rs1,
     // Indicates need to flush
@@ -42,7 +43,6 @@ module fet #(
 );
     // Internal Signals
     wire        [31:0]  nxt_pc;
-    wire                flush;
 
     // Register Holding
     reg [31:0]  nxt_pc_ff;
@@ -58,17 +58,18 @@ module fet #(
                 .i_branch(i_branch),
                 .i_jal(i_jal),
                 .i_jalr(i_jalr),
-                .i_halt(i_halt | i_hold), 
-                .i_immediate(i_immediate),
+                .i_halt(i_halt | i_hold),
+                .i_immediate_de(i_immediate_de),
+                .i_immediate_ex(i_immediate_ex),
                 .i_rs1(i_rs1),
                 .o_imem_raddr(o_imem_raddr),
                 .o_nxt_pc(nxt_pc),
-                .o_flush(flush));
+                .o_flush(o_flush));
 
     // IF/ID register
     always @(posedge i_clk) begin
-        if (i_rst | flush) begin
-            //on reset or flush load add x0 and x0 to x0
+        if (i_rst) begin
+            //on reset load add x0 and x0 to x0
             vld_ff    <= 1'b0;
         end
         else if (!i_hold) begin
@@ -83,6 +84,5 @@ module fet #(
     assign o_vld    = vld_ff;
     assign o_nxt_pc = nxt_pc_ff;
     assign o_pc     = pc_ff;
-    assign o_flush  = flush;
 
 endmodule

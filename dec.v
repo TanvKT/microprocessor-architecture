@@ -53,10 +53,12 @@ module dec
     output wire             o_jal_ff,
     output wire             o_jalr_ff,
     output wire [31:0]      o_immediate,    // Immediate value
+    output wire [31:0]      o_immediate_ff, 
 
     // Register Control
     output wire [ 4:0]      o_rd_waddr,     // RD address (inst[11:7])
     output wire             o_rd_wen,       // Asserted when writing to register file
+    output wire [31:0]      o_jalr_rs1,     // Current RS1 data for jalr
     output wire [31:0]      o_rs1_rdata,    // RS1 Data
     output wire [31:0]      o_rs2_rdata,    // RS2 Data
 
@@ -325,9 +327,11 @@ module dec
     assign o_jalr_ff       = jalr_ff;
     assign o_rd_waddr      = rd_waddr_ff;
     assign o_rd_wen        = rd_wen_ff;
+    assign o_jalr_rs1      = op1;
     assign o_rs1_rdata     = rs1_rdata_ff;
     assign o_rs2_rdata     = rs2_rdata_ff;
-    assign o_immediate     = immediate_ff;
+    assign o_immediate_ff  = immediate_ff;
+    assign o_immediate     = immediate;
     assign o_vld           = vld_ff;
     assign o_inst          = inst_ff;
     assign o_rs1_raddr     = rs1_raddr_ff;
