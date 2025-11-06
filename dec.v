@@ -299,7 +299,7 @@ module dec
             pc_ff            <= i_pc;
             nxt_pc_ff        <= i_nxt_pc;
         end
-        else if (id_ex_hold | i_flush) begin
+        if (id_ex_hold | i_flush) begin
             vld_ff           <= 1'b0;
             mem_read_ff      <= 1'b0;
             mem_write_ff     <= 1'b0;

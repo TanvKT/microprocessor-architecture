@@ -51,9 +51,9 @@ always @(posedge i_clk) begin
     if (i_rst) begin
         curr_addr <= RESET_ADDR;
     end
-    else if (br_vld | i_jal)
+    else if (i_jal)
         curr_addr <= nxt_addr + 3'd4;
-    else if (i_jalr)
+    else if (br_vld | i_jalr)
         curr_addr <= nxt_addr;
     else if (!i_halt & !i_hold)  // Hold PC on Halt or stall
         curr_addr <= nxt_addr;
@@ -67,7 +67,7 @@ assign br_vld       = i_branch    & ((i_eq   & (i_opsel == 3'b000)) | (~i_eq & (
 
 /* Logic to determine next addr */
 wire [31:0] jalr_v      = i_rs1 + i_immediate_de;
-assign nxt_addr         = (br_vld)          ? curr_addr + i_immediate_ex - 3'd4 :   //In this case we branch based offset, if taking this instruction
+assign nxt_addr         = (br_vld)          ? curr_addr + i_immediate_ex - 4'd8 :   //In this case we branch based offset, if taking this instruction
                                                                                     //        immediate is always aligned so no need to fix here
                           (i_jal)           ? curr_addr + i_immediate_de - 3'd4 :
                           (i_jalr)          ? {jalr_v[31:1], 1'b0} :                //Need to clear lsb to ensure aligned
