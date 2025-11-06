@@ -48,7 +48,6 @@ module frwd
     assign o_op2                  =   (i_frwd_alu_op2)      ?   i_ex_alu_res :
                                       (i_frwd_mem_alu_op2)  ?   i_mem_alu_res :
                                       (i_frwd_mem_op2)      ?   i_mem_res :
-                                      (i_imm)               ?   i_immediate   :
                                       (i_jal | i_jalr)      ?   32'd4       :       // When we are jumping, pc is loaded to op1
                                                                             // So we need to store pc + 4 in rd
                                                                 i_rs2_rdata;

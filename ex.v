@@ -88,7 +88,7 @@ module ex
                 .i_mem(i_mem), 
                 .i_auipc(i_auipc),
                 .i_op1(i_rs1_rdata), 
-                .i_op2((i_mem) ? i_immediate : i_rs2_rdata), 
+                .i_op2((i_mem | i_imm) ? i_immediate : i_rs2_rdata), 
                 .o_result(res), 
                 .o_eq(eq), 
                 .o_slt(slt));
