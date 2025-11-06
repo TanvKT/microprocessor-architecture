@@ -351,7 +351,7 @@ module dec
     assign o_jalr_ff       = jalr_ff;
     assign o_rd_waddr      = rd_waddr_ff;
     assign o_rd_wen        = rd_wen_ff;
-    assign o_jalr_rs1      = op1;
+    assign o_jalr_rs1      = rs1_rdata;
     assign o_rs1_rdata     = rs1_rdata_ff;
     assign o_rs2_rdata     = rs2_rdata_ff;
     assign o_immediate_ff  = immediate_ff;

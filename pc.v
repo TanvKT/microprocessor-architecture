@@ -51,8 +51,10 @@ always @(posedge i_clk) begin
     if (i_rst) begin
         curr_addr <= RESET_ADDR;
     end
-    else if (i_jal | i_jalr | br_vld)
+    else if (br_vld | i_jal)
         curr_addr <= nxt_addr + 3'd4;
+    else if (i_jalr)
+        curr_addr <= nxt_addr;
     else if (!i_halt & !i_hold)  // Hold PC on Halt or stall
         curr_addr <= nxt_addr;
     // Implied else hold
