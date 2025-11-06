@@ -154,7 +154,7 @@ module ex
     assign o_opsel         = opsel_ff;
 
     // Ensure that on reset slt and eq are tied to zero
-    assign o_slt        = (!vld_ff) ? 1'b0 : slt;
-    assign o_eq         = (!vld_ff) ? 1'b0 : eq;
+    assign o_slt        = (!i_vld) ? 1'b0 : slt;
+    assign o_eq         = (!i_vld) ? 1'b0 : eq;
 
 endmodule
