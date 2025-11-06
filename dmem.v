@@ -5,7 +5,7 @@
 *   Enables functionality of sub-word writes
 */
 module dmem(
-    input wire [2:0]        i_opsel,        // funct3 opsel
+    input wire [2:0]        i_opsel,      // funct3 opsel
     input wire [31:0]       i_dmem_addr,    // Memory access, used to determine mask
     input wire [31:0]       i_rs2_rdata,    // rs2 data
     input wire [31:0]       i_dmem_rdata,   // Unmasked memory read data

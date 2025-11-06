@@ -35,6 +35,7 @@ module ex
     output wire [4:0]      i_rs2_raddr,
     input wire [31:0]      i_nxt_pc,
 
+    output wire [2:0]   o_opsel,
     output wire         o_slt,
     output wire         o_eq,
     output wire [31:0]  o_res,
@@ -128,6 +129,7 @@ module ex
             rs2_rdata_ff     <= i_rs2_rdata;
             pc_ff            <= i_pc;
             nxt_pc_ff        <= i_nxt_pc;
+            opsel_ff         <= i_opsel;
         end
     end
 
@@ -149,6 +151,7 @@ module ex
     assign o_rs2_rdata     = rs2_rdata_ff;
     assign o_pc            = pc_ff;
     assign o_nxt_pc        = nxt_pc_ff;
+    assign o_opsel         = opsel_ff;
 
     // Ensure that on reset slt and eq are tied to zero
     assign o_slt        = (!vld_ff) ? 1'b0 : slt;

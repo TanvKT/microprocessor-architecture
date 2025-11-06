@@ -25,6 +25,7 @@ module pc #(
     input wire          i_jalr,
     // Asserts if processor needs to halt
     input wire          i_halt,
+    input wire          i_hold,
 
     /* Address Signals */
     // Immediate value used for Branch and Jump
@@ -52,7 +53,7 @@ always @(posedge i_clk) begin
     end
     else if (i_jal | i_jalr | br_vld)
         curr_addr <= nxt_addr + 3'd4;
-    else if (!i_halt)  // Hold PC on Halt
+    else if (!i_halt & !i_hold)  // Hold PC on Halt or stall
         curr_addr <= nxt_addr;
     // Implied else hold
 end
@@ -71,7 +72,9 @@ assign nxt_addr         = (br_vld)          ? curr_addr + i_immediate_ex - 3'd4 
                                                curr_addr + 3'd4;                    //In this case we increment PC by one instruction (default)
 
 /* Link output wire */
-assign o_imem_raddr = (i_jal | i_jalr | br_vld) ? nxt_addr : curr_addr;
+assign o_imem_raddr = (i_jal | i_jalr | br_vld) ? nxt_addr : 
+                      (i_hold)                  ? curr_addr - 3'd4 : 
+                                                  curr_addr;
 assign o_nxt_pc     = nxt_addr;
 assign o_flush      = br_vld;  // Flush if branch valid
 

@@ -226,6 +226,7 @@ module hart #(
     wire [31:0]             ex_rs2_rdata;
     wire [31:0]             ex_pc;
     wire [31:0]             ex_nxt_pc;
+    wire [2:0]              ex_opsel;
 
     // Memory
     wire                    mem_mem_reg;
@@ -388,7 +389,8 @@ module hart #(
         .o_rs1_rdata(ex_rs1_rdata),
         .o_rs2_rdata(ex_rs2_rdata),
         .o_pc(ex_pc),
-        .o_nxt_pc(ex_nxt_pc)
+        .o_nxt_pc(ex_nxt_pc),
+        .o_opsel(ex_opsel)
     );
 
     // Memory stage
@@ -403,7 +405,8 @@ module hart #(
         .i_rs2_rdata(ex_rs2_rdata),
         .i_pc(ex_pc),
         .i_nxt_pc(ex_nxt_pc),
-        .i_opsel(de_opsel),
+        .i_opsel_w(de_opsel),
+        .i_opsel_r(ex_opsel),
         .i_rd_waddr(ex_rd_waddr),
         .i_rd_wen(ex_rd_wen),
         .i_dmem_addr(ex_dmem_addr),

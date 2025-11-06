@@ -58,7 +58,8 @@ module fet #(
                 .i_branch(i_branch),
                 .i_jal(i_jal),
                 .i_jalr(i_jalr),
-                .i_halt(i_halt | i_hold),
+                .i_halt(i_halt),
+                .i_hold(i_hold),
                 .i_immediate_de(i_immediate_de),
                 .i_immediate_ex(i_immediate_ex),
                 .i_rs1(i_rs1),
@@ -72,7 +73,7 @@ module fet #(
             //on reset load add x0 and x0 to x0
             vld_ff    <= 1'b0;
         end
-        else if (!i_hold) begin
+        else begin
             nxt_pc_ff      <= nxt_pc;
             pc_ff          <= o_imem_raddr;
             vld_ff         <= 1'b1;

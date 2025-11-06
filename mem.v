@@ -16,7 +16,8 @@ module mem
     input wire [31:0]   i_pc,
     input wire [31:0]   i_nxt_pc,
 
-    input wire [2:0]    i_opsel,
+    input wire [2:0]    i_opsel_w, //opsel arrives at different times if read or write
+    input wire [2:0]    i_opsel_r,
     input wire [31:0]   i_dmem_addr,
     input wire [31:0]   i_dmem_wdata,
     input wire [31:0]   i_dmem_rdata,
@@ -80,7 +81,8 @@ module mem
     reg [31:0]   nxt_pc_ff;
 
     // Memory handler (determines mask and aligns accesses)
-    dmem dmem(.i_opsel(i_opsel),
+    wire [2:0]   opsel;
+    dmem dmem(.i_opsel(opsel),
                 .i_dmem_addr(i_dmem_addr),
                 .i_rs2_rdata(i_dmem_wdata),
                 .i_dmem_rdata(i_dmem_rdata),
@@ -90,6 +92,7 @@ module mem
                 .o_dmem_mask(o_dmem_mask));
     assign o_dmem_wen = i_dmem_wen;
     assign o_dmem_ren = i_dmem_ren;
+    assign opsel      = (o_dmem_wen) ? i_opsel_w : i_opsel_r;
 
     // MEM/WB Register
     always @(posedge i_clk) begin
@@ -115,7 +118,7 @@ module mem
             dmem_addr_ff     <= o_dmem_addr;
             dmem_mask_ff     <= o_dmem_mask;
             dmem_addr_ff1    <= dmem_addr_ff;
-            dmem_mask_ff1    <= dmem_mask_ff;
+            dmem_mask_ff1    <= (i_dmem_wen_ff) ? dmem_mask_ff : o_dmem_mask;
             dmem_ren_ff      <= i_dmem_ren_ff;
             dmem_wen_ff      <= i_dmem_wen_ff;
             dmem_wdata_ff    <= o_dmem_wdata;
