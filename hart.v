@@ -214,7 +214,6 @@ module hart #(
     wire                    ex_mem_reg;
     wire                    ex_mem_read;
     wire                    ex_mem_write;
-    wire [2:0]              ex_opsel;
     wire [4:0]              ex_rd_waddr;
     wire                    ex_rd_wen;
     wire [31:0]             ex_dmem_addr;
@@ -246,6 +245,7 @@ module hart #(
     wire                    mem_dmem_ren;
     wire                    mem_dmem_wen;
     wire [31:0]             mem_dmem_wdata;
+    wire [31:0]             mem_dmem_rdata_ff;
     wire [31:0]             mem_pc;
     wire [31:0]             mem_nxt_pc;
 
@@ -377,7 +377,6 @@ module hart #(
         .o_mem_reg(ex_mem_reg),
         .o_mem_read(ex_mem_read),
         .o_mem_write(ex_mem_write),
-        .o_opsel(ex_opsel),
         .o_rd_waddr(ex_rd_waddr),
         .o_rd_wen(ex_rd_wen),
         .o_dmem_addr(ex_dmem_addr),
@@ -404,14 +403,16 @@ module hart #(
         .i_rs2_rdata(ex_rs2_rdata),
         .i_pc(ex_pc),
         .i_nxt_pc(ex_nxt_pc),
-        .i_opsel(ex_opsel),
+        .i_opsel(de_opsel),
         .i_rd_waddr(ex_rd_waddr),
         .i_rd_wen(ex_rd_wen),
         .i_dmem_addr(ex_dmem_addr),
         .i_dmem_wdata(ex_dmem_wdata),
         .i_dmem_rdata(i_dmem_rdata),
-        .i_dmem_ren(ex_mem_read),
-        .i_dmem_wen(ex_mem_write),
+        .i_dmem_ren(de_mem_read),
+        .i_dmem_wen(de_mem_write),
+        .i_dmem_ren_ff(ex_mem_read),
+        .i_dmem_wen_ff(ex_mem_write),
         .i_mem_reg(ex_mem_reg),
         .i_res(ex_res_ff),
         .o_mem_reg(mem_mem_reg),
@@ -435,6 +436,7 @@ module hart #(
         .o_dmem_ren_ff(mem_dmem_ren),
         .o_dmem_wen_ff(mem_dmem_wen),
         .o_dmem_wdata_ff(mem_dmem_wdata),
+        .o_dmem_rdata_ff(mem_dmem_rdata_ff),
         .o_pc(mem_pc),
         .o_nxt_pc(mem_nxt_pc)
     );
@@ -443,7 +445,7 @@ module hart #(
     wb u_wb(
         .i_rst(i_rst),
         .i_mem_reg(mem_mem_reg),
-        .i_dmem_rdata(mem_dmem_rdata),
+        .i_dmem_rdata(mem_dmem_rdata_ff),
         .i_res(mem_res),
         .i_rd_waddr(mem_rd_waddr),
         .i_rd_wen(mem_rd_wen),
