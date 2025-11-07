@@ -119,7 +119,7 @@ module mem
             rs2_raddr_ff     <= i_rs2_raddr;
             rs1_rdata_ff     <= i_rs1_rdata;
             rs2_rdata_ff     <= i_rs2_rdata;
-            dmem_addr_ff     <= i_dmem_addr;
+            dmem_addr_ff     <= o_dmem_addr;
             dmem_mask_ff     <= o_dmem_mask;
             dmem_addr_ff1    <= dmem_addr_ff;
             dmem_mask_ff1    <= (i_dmem_wen_ff) ? dmem_mask_ff : dmem_mask_r;
