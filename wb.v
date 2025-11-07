@@ -7,6 +7,7 @@ module wb
     input wire          i_rst,
     input wire          i_mem_reg,
     input wire [31:0]   i_dmem_rdata,
+    input wire [31:0]   i_dmem_rdata_raw,
     input wire [31:0]   i_res,
     input wire [4:0]    i_rd_waddr,
     input wire          i_rd_wen,
@@ -57,7 +58,7 @@ assign o_dmem_addr     = i_dmem_addr;
 assign o_dmem_mask     = i_dmem_mask;
 assign o_dmem_wen      = i_dmem_wen;
 assign o_dmem_ren      = i_dmem_ren;
-assign o_dmem_rdata    = i_dmem_rdata;
+assign o_dmem_rdata    = i_dmem_rdata_raw;
 assign o_dmem_wdata    = i_dmem_wdata;
 assign o_pc            = i_pc;
 assign o_nxt_pc        = i_nxt_pc;

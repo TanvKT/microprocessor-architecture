@@ -188,7 +188,6 @@ module dec
 
     // Arithmetic Logic Unit Operand Selection (forwarding unit)
     frwd frwd( .i_auipc(auipc),
-                .i_imm(imm),
                 .i_jal(jal),
                 .i_jalr(jalr),
                 .i_mem_reg(mem_reg),
@@ -198,7 +197,6 @@ module dec
                 .i_ex_alu_res(i_ex_alu_res),
                 .i_mem_alu_res(i_mem_alu_res),
                 .i_mem_res(i_mem_res),
-                .i_immediate(immediate),
                 .i_frwd_alu_op1(frwd_alu_op1),
                 .i_frwd_mem_alu_op1(frwd_mem_alu_op1),
                 .i_frwd_mem_op1(frwd_mem_op1),

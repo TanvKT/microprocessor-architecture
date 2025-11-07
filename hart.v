@@ -232,6 +232,7 @@ module hart #(
     wire                    mem_mem_reg;
     wire [31:0]             mem_res;
     wire [31:0]             mem_dmem_rdata;
+    wire [31:0]             mem_dmem_rdata_raw;
     wire [4:0]              mem_rd_waddr;
     wire                    mem_rd_wen;
     wire                    mem_vld;
@@ -440,6 +441,7 @@ module hart #(
         .o_dmem_wen_ff(mem_dmem_wen),
         .o_dmem_wdata_ff(mem_dmem_wdata),
         .o_dmem_rdata_ff(mem_dmem_rdata_ff),
+        .o_dmem_rdata_raw(mem_dmem_rdata_raw),
         .o_pc(mem_pc),
         .o_nxt_pc(mem_nxt_pc)
     );
@@ -449,6 +451,7 @@ module hart #(
         .i_rst(i_rst),
         .i_mem_reg(mem_mem_reg),
         .i_dmem_rdata(mem_dmem_rdata_ff),
+        .i_dmem_rdata_raw(mem_dmem_rdata_raw),
         .i_res(mem_res),
         .i_rd_waddr(mem_rd_waddr),
         .i_rd_wen(mem_rd_wen),

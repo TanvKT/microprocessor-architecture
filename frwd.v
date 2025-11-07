@@ -13,14 +13,12 @@
 module frwd
 (
     input wire          i_auipc,        //load pc into op1
-    input wire          i_imm,          //load immediate to op2
     input wire          i_jal,          //load 4 into op2
     input wire          i_jalr,
     input wire          i_mem_reg,      //select ALU or memory result
     input wire [31:0]   i_pc,           //program counter value
     input wire [31:0]   i_rs1_rdata,    //rs1 data from rf
     input wire [31:0]   i_rs2_rdata,    //rs2 data from rf
-    input wire [31:0]   i_immediate,    //immediate value
 
     input wire          i_frwd_alu_op1,     //forward from alu result op1
     input wire          i_frwd_mem_alu_op1, //forward from mem alu res op1
