@@ -111,6 +111,7 @@ module dec
     wire        frwd_mem_op2;       //forward from memory result op2
     wire [31:0] op1;                // Op1 passed to ALU
     wire [31:0] op2;                // Op2 passed to ALU
+    wire [31:0] jalr_op1;           // Op1 passed to PC
 
     /* Registers for Pipeline */
     reg         mem_read_ff;
@@ -176,6 +177,7 @@ module dec
                 .i_rs1_raddr(rs1_raddr),
                 .i_rs2_raddr(rs2_raddr),
                 .i_is_load(mem_read),
+                .i_flush(i_flush),
                 .o_if_id_halt(if_id_hold),
                 .o_id_ex_halt(id_ex_hold),
                 .o_frwd_alu_op1(frwd_alu_op1),
@@ -204,7 +206,8 @@ module dec
                 .i_frwd_mem_alu_op2(frwd_mem_alu_op2),
                 .i_frwd_mem_op2(frwd_mem_op2),
                 .o_op1(op1),
-                .o_op2(op2));
+                .o_op2(op2),
+                .o_jalr_op1(jalr_op1));
 
     // Control Unit
     ctrl u_ctrl(.i_rst(i_rst),
@@ -349,7 +352,7 @@ module dec
     assign o_jalr_ff       = jalr_ff;
     assign o_rd_waddr      = rd_waddr_ff;
     assign o_rd_wen        = rd_wen_ff;
-    assign o_jalr_rs1      = rs1_rdata;
+    assign o_jalr_rs1      = jalr_op1;
     assign o_rs1_rdata     = rs1_rdata_ff;
     assign o_rs2_rdata     = rs2_rdata_ff;
     assign o_immediate_ff  = immediate_ff;
