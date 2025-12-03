@@ -32,7 +32,7 @@ module ex
 
     input wire [31:0]      i_inst,
     input wire [4:0]       i_rs1_raddr,
-    output wire [4:0]      i_rs2_raddr,
+    input wire [4:0]       i_rs2_raddr,
     input wire [31:0]      i_nxt_pc,
 
     output wire [2:0]   o_opsel,
