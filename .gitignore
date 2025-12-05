@@ -8,3 +8,4 @@ work/_vmake
 ECE552.cr.mti
 hart.vcd
 vsim.wlf
+cache.vcd
