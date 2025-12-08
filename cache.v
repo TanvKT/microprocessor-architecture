@@ -187,7 +187,7 @@ module cache (
                         l_ready = 1'b1;
                     end
                     else begin
-                        l_rdata = (l_set_i) ? datas1[set][(offset >> 2)] : datas0[set][(offset >> 2)];
+                        l_rdata = (set_i_ff) ? datas1[set][(offset >> 2)] : datas0[set][(offset >> 2)];
                     end
                     l_busy = 1'b1;  //keep busy asserted to avoid queing next write until back in compare state
                     nxt_state = COMPARE;

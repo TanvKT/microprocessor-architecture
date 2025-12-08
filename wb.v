@@ -24,6 +24,7 @@ module wb
     input wire [31:0]   i_dmem_wdata,
     input wire [31:0]   i_pc,
     input wire [31:0]   i_nxt_pc,
+    input wire          i_break,
 
     output wire [31:0]  o_res,
     output wire [4:0]   o_rd_waddr,
@@ -41,7 +42,8 @@ module wb
     output wire [31:0]  o_dmem_rdata,
     output wire [31:0]  o_dmem_wdata,
     output wire [31:0]  o_pc,
-    output wire [31:0]  o_nxt_pc
+    output wire [31:0]  o_nxt_pc,
+    output wire         o_break
 );
 
 // Need to determine if we want to use ALU result or memory output
@@ -62,5 +64,6 @@ assign o_dmem_rdata    = i_dmem_rdata_raw;
 assign o_dmem_wdata    = i_dmem_wdata;
 assign o_pc            = i_pc;
 assign o_nxt_pc        = i_nxt_pc;
+assign o_break         = i_break;
 
 endmodule

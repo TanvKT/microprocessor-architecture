@@ -29,11 +29,15 @@ module ex
     input  wire         i_unsigned,
     input  wire         i_pass,
     input  wire         i_mem,
+    input  wire         i_break,
 
     input wire [31:0]      i_inst,
     input wire [4:0]       i_rs1_raddr,
     input wire [4:0]       i_rs2_raddr,
     input wire [31:0]      i_nxt_pc,
+
+    input wire          i_inst_busy,
+    input wire          i_data_busy,
 
     output wire [2:0]   o_opsel,
     output wire         o_slt,
@@ -55,7 +59,8 @@ module ex
     output wire [31:0]  o_rs1_rdata,
     output wire [31:0]  o_rs2_rdata,
     output wire [31:0]  o_pc,
-    output wire [31:0]  o_nxt_pc
+    output wire [31:0]  o_nxt_pc,
+    output wire         o_break
 );
     // Internal Signals
     wire    [31:0] res;
@@ -78,6 +83,7 @@ module ex
     reg [31:0]   rs2_rdata_ff;
     reg [31:0]   pc_ff;
     reg [31:0]   nxt_pc_ff;
+    reg          break_ff;
 
     // Arithmetic Logic Unit
     alu  alu( .i_opsel(i_opsel), 
@@ -112,9 +118,10 @@ module ex
             rs2_rdata_ff     <= 32'd0;
             pc_ff            <= 32'd0;
             nxt_pc_ff        <= 32'd0;
+            break_ff         <= 1'b0;
             
         end
-        else begin
+        else if (!i_data_busy) begin
             res_ff           <= res;
             mem_reg_ff       <= i_mem_reg;
             mem_read_ff      <= i_mem_read;
@@ -130,6 +137,7 @@ module ex
             pc_ff            <= i_pc;
             nxt_pc_ff        <= i_nxt_pc;
             opsel_ff         <= i_opsel;
+            break_ff         <= i_break;
         end
     end
 
@@ -152,6 +160,7 @@ module ex
     assign o_pc            = pc_ff;
     assign o_nxt_pc        = nxt_pc_ff;
     assign o_opsel         = opsel_ff;
+    assign o_break         = break_ff;
 
     // Ensure that on reset slt and eq are tied to zero
     assign o_slt        = (!i_vld) ? 1'b0 : slt;

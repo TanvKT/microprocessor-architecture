@@ -30,6 +30,10 @@ module mem
     input wire [4:0]    i_rd_waddr,
     input wire          i_rd_wen,
 
+    input wire          i_inst_busy,
+    input wire          i_data_busy,
+    input wire          i_break,
+
     output wire         o_mem_reg,
     output wire [31:0]  o_res,
     output wire [4:0]   o_rd_waddr,
@@ -56,7 +60,8 @@ module mem
     output wire [31:0]  o_dmem_rdata_ff,
     output wire [31:0]  o_dmem_rdata_raw,
     output wire [31:0]  o_pc,
-    output wire [31:0]  o_nxt_pc
+    output wire [31:0]  o_nxt_pc,
+    output wire         o_break
 );
     // Register Signals
     reg          mem_reg_ff;
@@ -82,6 +87,9 @@ module mem
     reg [31:0]   dmem_rdata_raw_ff;
     reg [31:0]   pc_ff;
     reg [31:0]   nxt_pc_ff;
+    reg          break_ff;
+    reg          data_busy_ff;
+    wire         data_busy_fall = i_data_busy & data_busy_ff;
 
     // Memory handler (determines mask and aligns accesses)
     dmem dmem(.i_opsel_r(i_opsel_r),
@@ -107,8 +115,10 @@ module mem
             rd_waddr_ff <= 5'd0;
             res_ff      <= 32'd0;
             mem_reg_ff  <= 1'b0;
+            data_busy_ff <= 1'b0;
+            break_ff     <= 1'b0;
         end
-        else begin
+        else if (!i_data_busy) begin
             mem_reg_ff       <= i_mem_reg;
             res_ff           <= i_res;
             rd_waddr_ff      <= i_rd_waddr;
@@ -131,7 +141,12 @@ module mem
             dmem_rdata_raw_ff <= i_dmem_rdata;
             pc_ff            <= i_pc;
             nxt_pc_ff        <= i_nxt_pc;
+            break_ff         <= i_break;
         end
+        if (i_data_busy)
+            vld_ff           <= 1'b0;
+
+        data_busy_ff         <= i_data_busy;
     end
 
     // Assign Registers to wires
@@ -154,5 +169,6 @@ module mem
     assign o_dmem_rdata_raw = dmem_rdata_raw_ff;
     assign o_pc            = pc_ff;
     assign o_nxt_pc        = nxt_pc_ff;
+    assign o_break         = break_ff;
 
 endmodule

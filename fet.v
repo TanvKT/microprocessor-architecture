@@ -24,6 +24,8 @@ module fet #(
     // Asserts if processor needs to halt
     input wire          i_halt,
     input wire          i_hold,
+    input wire          i_inst_busy,
+    input wire          i_data_busy,
 
     /* Address Signals */
     // Immediate value used for Branch and Jump
@@ -60,6 +62,8 @@ module fet #(
                 .i_jalr(i_jalr),
                 .i_halt(i_halt),
                 .i_hold(i_hold),
+                .i_inst_busy(i_inst_busy),
+                .i_data_busy(i_data_busy),
                 .i_immediate_de(i_immediate_de),
                 .i_immediate_ex(i_immediate_ex),
                 .i_rs1(i_rs1),

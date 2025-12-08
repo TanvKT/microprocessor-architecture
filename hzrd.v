@@ -12,6 +12,7 @@ module hzrd
     input wire [4:0]    i_rs2_raddr, // RS2 Address
     input wire          i_is_load,   // Asserted if load instruction (need to wait for memory)
     input wire          i_flush,     // Asserted if flushing instruction in decode stage
+    input wire          i_data_busy, // Asserted if data cache miss
 
     output wire         o_if_id_halt,       //halt IF/ID pipeline
     output wire         o_id_ex_halt,       //halt ID/EX pipeline
@@ -78,7 +79,7 @@ module hzrd
             mem_waddr   <= 5'd0;
             mem_is_load <= 1'b0;
         end
-        else begin
+        else if (!i_data_busy) begin
             // Else start shifting
             ex_waddr   <= (i_flush) ? 5'd0 : nxt_waddr;
             ex_is_load <= (i_flush) ? 1'b0 : nxt_is_load;
