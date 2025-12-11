@@ -75,6 +75,7 @@ module mem
     reg [31:0]   rs1_rdata_ff;
     reg [31:0]   rs2_rdata_ff;
     reg [31:0]   dmem_addr_ff;
+    reg [31:0]   dmem_addr_raw_ff;
     reg [3:0]    dmem_mask_ff;
     wire [3:0]   dmem_mask_r;
     reg [31:0]   dmem_addr_ff1;
@@ -95,7 +96,7 @@ module mem
     dmem dmem(.i_opsel_r(i_opsel_r),
                 .i_opsel_w(i_opsel_w),
                 .i_dmem_addr_w(i_dmem_addr),
-                .i_dmem_addr_r(dmem_addr_ff),
+                .i_dmem_addr_r(dmem_addr_raw_ff),
                 .i_rs2_rdata(i_dmem_wdata),
                 .i_dmem_rdata(i_dmem_rdata),
                 .o_dmem_addr(o_dmem_addr),
@@ -130,6 +131,7 @@ module mem
             rs1_rdata_ff     <= i_rs1_rdata;
             rs2_rdata_ff     <= i_rs2_rdata;
             dmem_addr_ff     <= o_dmem_addr;
+            dmem_addr_raw_ff <= i_dmem_addr;
             dmem_mask_ff     <= o_dmem_mask;
             dmem_addr_ff1    <= dmem_addr_ff;
             dmem_mask_ff1    <= (i_dmem_wen_ff) ? dmem_mask_ff : dmem_mask_r;

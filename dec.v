@@ -147,16 +147,20 @@ module dec
     reg [31:0]  nxt_pc_ff;
     reg         wait_ff;    //on reset need to hold noop for a cycle
     reg         inst_busy_ff;
-    wire        inst_busy_fall = i_inst_busy & inst_busy_ff;
+    wire        inst_busy_fall = !i_inst_busy & inst_busy_ff;
     reg         data_busy_ff;
-    wire        data_busy_fall = i_data_busy & data_busy_ff;
+    wire        data_busy_fall = !i_data_busy & data_busy_ff;
 
     // Ensure we can flush the instruction to add x0 x0 x0
     assign inst = (i_flush | wait_ff) ? 32'h00000033 : i_inst;
 
     // Also pass jal and jalr for fe stage
-    assign o_jal  = (!vld_ff) ? 1'b0 : jal;
-    assign o_jalr = (!vld_ff) ? 1'b0 : jalr;
+    assign o_jal  = (inst_busy_fall) ? jal :
+                    (!vld_ff)        ? 1'b0 :
+                                       jal;
+    assign o_jalr = (inst_busy_fall) ? jalr :
+                    (!vld_ff)        ? 1'b0 :
+                                       jalr;
 
     // Immediate Encoder
     imm  u_imm( .i_inst(inst), 
@@ -282,7 +286,7 @@ module dec
         else begin
             wait_ff          <= 1'b0;
         end
-        if (!id_ex_hold & !inst_busy_fall & !i_data_busy) begin
+        if (!id_ex_hold & !(i_inst_busy & inst_busy_ff) & !i_data_busy & !(i_flush & i_inst_busy & inst_busy_ff)) begin
             mem_read_ff      <= mem_read;
             mem_reg_ff       <= mem_reg;
             mem_write_ff     <= mem_write;
@@ -311,7 +315,7 @@ module dec
             pc_ff            <= i_pc;
             nxt_pc_ff        <= i_nxt_pc;
         end
-        if (id_ex_hold | i_flush | (inst_busy_fall & !i_data_busy)) begin
+        if (id_ex_hold | (i_flush & !(i_inst_busy & inst_busy_ff)) | ((i_inst_busy & inst_busy_ff) & !i_data_busy & !i_flush)) begin
             vld_ff           <= 1'b0;
             mem_read_ff      <= 1'b0;
             mem_write_ff     <= 1'b0;
@@ -338,6 +342,8 @@ module dec
             rs1_raddr_ff     <= 5'd0;
             rs2_raddr_ff     <= 5'd0;
         end
+        if (i_flush & i_inst_busy)
+            vld_ff <= 1'b0;
         // Implied else hold
 
         inst_busy_ff <= i_inst_busy;

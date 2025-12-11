@@ -70,7 +70,7 @@ always @(posedge i_clk) begin
         inst_busy_ff <= 1'b0;
         data_busy_ff <= 1'b0;
     end
-    else if ((br_vld | i_jal | i_jalr) & !busy_ff)
+    else if ((br_vld | i_jal | i_jalr) & !(busy_ff & !(!i_inst_busy & inst_busy_ff)))
         curr_addr <= nxt_addr + 3'd4;
     else if (!i_halt & !i_hold & !busy_fall)  // Hold PC on Halt or stall
         curr_addr <= nxt_addr;
@@ -102,7 +102,7 @@ assign br_vld       = i_branch    & ((i_eq   & (i_opsel == 3'b000)) | (~i_eq & (
 
 /* Logic to determine next addr */
 wire [31:0] jalr_v      = i_rs1 + i_immediate_de;
-assign nxt_addr         = (busy_ff)         ? curr_addr + 3'd4 :                    //Busy takes precedence over jumps
+assign nxt_addr         = (busy_ff & !(!i_inst_busy & inst_busy_ff))         ? curr_addr + 3'd4 :                    //Busy takes precedence over jumps
                           (br_vld)          ? curr_addr + i_immediate_ex - 4'd8 :   //In this case we branch based offset, if taking this instruction
                                                                                     //        immediate is always aligned so no need to fix here
                           (i_jal)           ? curr_addr + i_immediate_de - 3'd4 :
@@ -112,7 +112,7 @@ assign nxt_addr         = (busy_ff)         ? curr_addr + 3'd4 :                
 /* Link output wire */
 assign o_imem_raddr = ((i_jal | i_jalr | br_vld) & data_busy_rise)  ? prev_addr :
                       (data_busy_rise)                              ? prev_addr :
-                      ((i_jal | i_jalr | br_vld) & !busy_ff)        ? nxt_addr :
+                      ((i_jal | i_jalr | br_vld) & !(busy_ff & !(!i_inst_busy & inst_busy_ff)))        ? nxt_addr :
                       (busy_fall)                                   ? busy_addr :
                       (i_hold)                                      ? curr_addr - 3'd4 : 
                                                                       curr_addr;

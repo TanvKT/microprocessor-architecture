@@ -84,6 +84,7 @@ module ex
     reg [31:0]   pc_ff;
     reg [31:0]   nxt_pc_ff;
     reg          break_ff;
+    reg          inst_busy_ff;
 
     // Arithmetic Logic Unit
     alu  alu( .i_opsel(i_opsel), 
@@ -139,6 +140,8 @@ module ex
             opsel_ff         <= i_opsel;
             break_ff         <= i_break;
         end
+
+        inst_busy_ff         <= i_inst_busy;
     end
 
     // Assign wires to register
@@ -163,7 +166,7 @@ module ex
     assign o_break         = break_ff;
 
     // Ensure that on reset slt and eq are tied to zero
-    assign o_slt        = (!i_vld) ? 1'b0 : slt;
-    assign o_eq         = (!i_vld) ? 1'b0 : eq;
+    assign o_slt        = (!i_vld & !inst_busy_ff) ? 1'b0 : slt;
+    assign o_eq         = (!i_vld & !inst_busy_ff) ? 1'b0 : eq;
 
 endmodule
